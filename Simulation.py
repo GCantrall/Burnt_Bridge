@@ -13,7 +13,7 @@ class Simulation:
         self.td = 1
         self.lp = _lp
         self.ld = 1.
-        self.tb = _tp
+        self.tb = _tb
         self.peptide_remain = [600]
 
     def RunSimulation(self, totalTime):
@@ -34,28 +34,49 @@ class Simulation:
 
             #if(len(time)==10000):
                 #self.particle.PlotParticle()
-            time.append(time[-1] + -math.log(random.random())/(1/self.tp+1/self.td))
-            if(random.random()<((1/self.tp)/(1/(self.tp)+1/self.td))):
-                #print("large")
-                options  = self.particle.GetEdges(current_location)
-                choice  = random.random()*len(options)
+            withPeptide = []
+            withoutPeptide = []
+
+            options  = self.particle.GetEdges(current_location)
+            for option in options:
+                if (self.particle.peptide[option]==1):
+                    withPeptide.append(option)
+                else:
+                    withoutPeptide.append(option)
+            time.append(time[-1] + -math.log(random.random())/(len(withPeptide)/self.tp+1/self.td+len(withoutPeptide)/self.tb))
+
+            prob  = (len(withPeptide)/(self.tp))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))
+            probR = (len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))
+            rand = random.random()
+            if(rand<(len(withPeptide)/(self.tp))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))):
+                choice  = random.random()*len(withPeptide)
                 chosen = -1
-                for i in range(len(options)):
+                for i in range(len(withPeptide)):
                     if choice< (i+1):
                         chosen = i
                         break
-                peptide = self.particle.peptide[options[chosen]]
-                if(peptide==1):
-                    degree, peptide = self.particle.MoveParticle(options[chosen])
-                    x2 = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
-                    y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
-                    vector = [x2,y2]
-                    if peptide==1:
-                        self.x = self.x+x2*self.lp
-                        self.y = self.y+ y2*self.lp
-                    current_location = options[chosen]
+
+                degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
+                x2 = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
+                y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
+                vector = [x2,y2]
+
+                self.x = self.x+x2*self.lp
+                self.y = self.y+ y2*self.lp
+                current_location = withPeptide[chosen]
+            elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))):
+                choice  = random.random()*len(withoutPeptide)
+                chosen = -1
+                for i in range(len(withoutPeptide)):
+                    if choice< (i+1):
+                        chosen = i
+                        break
+                degree, peptide = self.particle.MoveParticle(withoutPeptide[chosen])
+                x2 = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
+                y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
+                vector = [x2,y2]
+                current_location = withoutPeptide[chosen]
             else:
-                #print("small")
                 degree = random.random()*2*math.pi
                 self.x = self.x+self.ld*math.cos(degree)
                 self.y = self.y+self.ld*math.sin(degree)
@@ -85,13 +106,7 @@ class Simulation:
         return time, x_tracker, y_tracker
 
 
-    def PlotMSD(self, times, distances):
-        msd = []
-        for distance in distances:
-            msd.append(math.pow(distance,2))
 
-        plt.plot(times,msd)
-        plt.show()
 
 
 
