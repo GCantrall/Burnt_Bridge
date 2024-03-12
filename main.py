@@ -9,11 +9,17 @@ import os.path
 
 
 
-def GetMSDR(x,y,inc):
-    MSD = []
+def GetRMSDW(x,y,inc):
+    RMSD = []
     for i in range(inc,len(x)):
-        MSD.append(np.sqrt(pow(x[i]-x[i-inc],2)+pow(y[i]-y[i-inc],2)))
+        RMSD.append(np.sqrt(pow(x[i]-x[i-inc],2)+pow(y[i]-y[i-inc],2)))
 
+    return RMSD
+
+def GetMSD(x,y):
+    MSD = []
+    for i in range(len(x)):
+        MSD.append(pow(x[i],2)+pow(y[i],2))
     return MSD
 
 def GetParams():
@@ -24,6 +30,7 @@ def GetParams():
     id = -1
     tb = 1000
     arguments = sys.argv
+    w = 10000
     for i in range(int((len(arguments)-1)/2)):
         if arguments[(2*i+1)] == "-s":
             s_length = int(arguments[2*i+2])
@@ -37,12 +44,14 @@ def GetParams():
             id = int(arguments[2*i+2])
         elif arguments[(2*i+1)] == "-tb":
             tb = int(arguments[2*i+2])
+        elif arguments[(2*i+1)] =="-w":
+            w = int(arguments[2*i+2])
 
-    return [s_length, replicates, tp, lp, tb, id]
+    return [s_length, replicates, tp, lp, tb, id,w]
 
 
 if __name__ == '__main__':
-    s_length, replicates, tp, lp, tb, id = GetParams()
+    s_length, replicates, tp, lp, tb, id, RMSDw_l = GetParams()
 
     S = Simulation(tp,lp,tb)
     times = []
@@ -53,7 +62,8 @@ if __name__ == '__main__':
     peptide_remaining = np.zeros(len(timescale))
     x = np.zeros(len(timescale))
     y = np.zeros(len(timescale))
-
+    RMSDw = np.zeros(len(timescale)- RMSDw_l)
+    MSD = np.zeros(len(timescale))
     for i in range(replicates):
         print(i)
 
@@ -76,7 +86,8 @@ if __name__ == '__main__':
             peptide_unif.append(S.peptide_remain[k])
             x_unif.append(x_tracker[k])
             y_unif.append(y_tracker[k])
-
+        MSD = (i * MSD + np.array(GetMSD(x_unif, y_unif))) / (i + 1)
+        RMSDw = (i * RMSDw + np.array(GetRMSDW(x_unif, y_unif, RMSDw_l))) / (i + 1)
         peptide_remaining = (i*peptide_remaining+np.array(peptide_unif))/(i+1)
 
     filename  = "Simulation_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
@@ -96,10 +107,8 @@ if __name__ == '__main__':
 
 
 
-    np.savez(filename, peptides = peptide_remaining, x =x_unif, y=y_unif, timescale = timescale)
+    np.savez(filename, peptides = peptide_remaining, MSD =MSD, RMSDw = RMSDw, timescale = timescale)
 
-
-    #file = np.load("InfoFile.npz",allow_pickle=True)
 
 
 
