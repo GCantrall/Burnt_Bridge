@@ -28,7 +28,7 @@ def GetParams():
     tp = 500
     lp = 20
     id = -1
-    tb = 1000
+    tb = 4000
     arguments = sys.argv
     w = 10000
     for i in range(int((len(arguments)-1)/2)):
