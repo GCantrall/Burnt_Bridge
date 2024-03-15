@@ -31,6 +31,7 @@ def GetParams():
     tb = 4000
     arguments = sys.argv
     w = 10000
+    plot = -1
     for i in range(int((len(arguments)-1)/2)):
         if arguments[(2*i+1)] == "-s":
             s_length = int(arguments[2*i+2])
@@ -46,12 +47,14 @@ def GetParams():
             tb = int(arguments[2*i+2])
         elif arguments[(2*i+1)] =="-w":
             w = int(arguments[2*i+2])
+        elif arguments[(2*i+1)] =="-p":
+            plot = int(arguments[2*i+2])
 
-    return [s_length, replicates, tp, lp, tb, id,w]
+    return [s_length, replicates, tp, lp, tb, id,w,plot]
 
 
 if __name__ == '__main__':
-    s_length, replicates, tp, lp, tb, id, RMSDw_l = GetParams()
+    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot = GetParams()
 
     S = Simulation(tp,lp,tb)
     times = []
@@ -68,7 +71,12 @@ if __name__ == '__main__':
         print(i)
 
         time, x_tracker, y_tracker = S.RunSimulation(s_length)
-
+        if(plot!=-1):
+            if(plot==1 or plot==3):
+                S.PlotPath(x_tracker,y_tracker)
+            if(plot==2 or plot==3):
+                S.particle.PlotParticle()
+            plt.show()
         peptide_unif = []
         x_unif = []
         y_unif = []

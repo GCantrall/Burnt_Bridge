@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 from Particle import Particle
 import numpy as np
 import math
@@ -16,12 +17,23 @@ class Simulation:
         self.tb = _tb
         self.peptide_remain = [600]
 
+    def PlotPath(self,x_tracker, y_tracker):
+
+        plt.gca().set_aspect('equal')
+        plt.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1)
+        plt.plot(x_tracker, y_tracker,c = 'r', zorder=0)
+
+
+
     def RunSimulation(self, totalTime):
         x_tracker = [0]
         y_tracker = [0]
         time  = [0]
         self.x = 0
         self.y = 0
+        self.x_peptide = []
+        self.y_peptide = []
+
 
         self.peptide_remain = [600]
         self.particle.CreateParticle()
@@ -59,8 +71,11 @@ class Simulation:
                 y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
                 vector = [x2,y2]
 
+
                 self.x = self.x+x2*self.lp
                 self.y = self.y+ y2*self.lp
+                self.x_peptide.append(self.x)
+                self.y_peptide.append(self.y)
                 current_location = withPeptide[chosen]
             elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))):
                 choice  = random.random()*len(withoutPeptide)
