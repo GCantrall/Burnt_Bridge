@@ -34,34 +34,25 @@ def PlotLogMSD(Data):
     ax2.plot((Data.timescale),Data.peptides,c = 'r')
     ax2.set_ylim(0,600)
 
-def PlotRMSD(Data):
-    fig, ax1 = plt.subplots()
+def PlotTotalMSD(Data):
+
     fig2, ax1_b = plt.subplots()
-    fig3, ax1_c = plt.subplots()
-
-    ax2 = ax1.twinx()
-    ax2_c = ax1_c.twinx()
-
-    ax1_c.plot(timescale[MSDLen:],MSD)
-    ax2_c.plot(timescale,peptide_remaining,c = 'r')
-
-    ax1.set_yscale('log',base=10)
-    ax1.set_xscale('log',base=10)
-    ax1.plot((timescale),(distances))
-    ax1.plot((timescale),(timescale))
-    ax2.plot((timescale),peptide_remaining,c = 'r')
-    ax2.set_ylim(0,600)
-
-    ax1_b.plot(timescale,(distances))
     ax2_b = ax1_b.twinx()
-    ax2_b.plot(timescale,peptide_remaining,c = 'r')
+
+    ax1_b.plot(Data.timescale,(Data.MSD))
+    ax2_b.plot(Data.timescale,Data.peptides,c = 'r')
+    ax2_b.set_ylim(0, 600)
 
 
+def PlotRunningMSD(Data):
+    fig3, ax1_c = plt.subplots()
+    ax1_c.plot(Data.timescale[-len(Data.RMSDw):],Data.RMSDw)
+    ax2_c = ax1_c.twinx()
+    ax2_c.plot(Data.timescale,Data.peptides,c = 'r')
+    ax2_c.set_ylim(0, 600)
 
 
-
-
-Data1  = LoadGroup(idMin=1,idMax=9,versionMin=1, versionMax=7,tp=500,lp=100, tb=1000,path="DataFolder")
+Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, versionMax=1,tp=500,lp=20, tb=4000,path="DataFolder3")
 #DataSet(tp=500,lp=100, tb=1000,id=1,version=2,path="DataFolder")
 
 #Data2  = DataSet(replicates=100,s_length=1000000, tp=500)
@@ -69,12 +60,14 @@ Data1  = LoadGroup(idMin=1,idMax=9,versionMin=1, versionMax=7,tp=500,lp=100, tb=
 
 
 
-Data1.LoadData()
+
 #Data2.LoadData()
 
 #Data1.Average(Data2)
 
 
 PlotLogMSD(Data1)
+PlotRunningMSD(Data1)
+PlotTotalMSD(Data1)
 
 plt.show()
