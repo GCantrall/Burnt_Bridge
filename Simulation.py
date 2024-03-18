@@ -14,8 +14,10 @@ class Simulation:
         self.td = 1
         self.lp = _lp
         self.ld = 1.
+        self.peptide_size = 10
         self.tb = _tb
         self.peptide_remain = [600]
+        self.neighbors = []
 
     def PlotPath(self,x_tracker, y_tracker):
 
@@ -24,6 +26,11 @@ class Simulation:
         plt.plot(x_tracker, y_tracker,c = 'r', zorder=0)
 
 
+    def SetNeighbors(self):
+        self.neighbors = []
+        for k in range(len(self.x_peptide)):
+            if(np.sqrt(math.pow(self.x_peptide[k]- self.x,2) + math.pow(self.y_peptide[k]- self.y,2))<2*self.peptide_size):
+                self.neighbors.append(k)
 
     def RunSimulation(self, totalTime):
         x_tracker = [0]
@@ -33,6 +40,7 @@ class Simulation:
         self.y = 0
         self.x_peptide = []
         self.y_peptide = []
+        self.neighbors = []
 
 
         self.peptide_remain = [600]
@@ -43,6 +51,8 @@ class Simulation:
 
 
         while (time[-1]<totalTime):
+            if(len(time)%400==0):
+                self.SetNeighbors()
 
             #if(len(time)==10000):
                 #self.particle.PlotParticle()
@@ -59,6 +69,7 @@ class Simulation:
 
             rand = random.random()
             if(rand<(len(withPeptide)/(self.tp))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))):
+                self.SetNeighbors()
                 choice  = random.random()*len(withPeptide)
                 chosen = -1
                 for i in range(len(withPeptide)):
@@ -66,17 +77,31 @@ class Simulation:
                         chosen = i
                         break
 
-                degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
-                x2 = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
-                y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
-                vector = [x2,y2]
 
+                degree = self.particle.GetDirection(withPeptide[chosen])
+                x2_d = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
+                y2_d = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
 
-                self.x = self.x+x2*self.lp
-                self.y = self.y+ y2*self.lp
-                self.x_peptide.append(self.x)
-                self.y_peptide.append(self.y)
-                current_location = withPeptide[chosen]
+                x2 = self.x+x2_d*self.lp
+                y2 =self.y+y2_d*self.lp
+
+                toClose = False
+                for k in self.neighbors:
+                    if(np.sqrt(math.pow(self.x_peptide[k]- x2,2) + math.pow(self.y_peptide[k]- y2,2))<self.peptide_size):
+                        toClose = True
+                        break
+                if not toClose:
+                    degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
+                    vector = [x2_d,y2_d]
+
+                    self.x_peptide.append(self.x)
+                    self.y_peptide.append(self.y)
+                    self.neighbors.append(len(self.neighbors))
+                    self.x = x2
+                    self.y = y2
+
+                    current_location = withPeptide[chosen]
+
             elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))):
                 choice  = random.random()*len(withoutPeptide)
                 chosen = -1
@@ -91,26 +116,25 @@ class Simulation:
                 current_location = withoutPeptide[chosen]
             else:
                 degree = random.random()*2*math.pi
-                self.x = self.x+self.ld*math.cos(degree)
-                self.y = self.y+self.ld*math.sin(degree)
+
+                x2 = self.x+self.ld*math.cos(degree)
+                y2 = self.y+self.ld*math.sin(degree)
+                toClose = False
+
+                for k in self.neighbors:
+                    if(np.sqrt(math.pow(self.x_peptide[k]- x2,2) + math.pow(self.y_peptide[k]- y2,2))<self.peptide_size):
+                        toClose = True
+                        break
+
+                if not toClose:
+                    self.x = x2
+                    self.y = y2
+
+
             x_tracker.append(self.x)
             y_tracker.append(self.y)
             self.peptide_remain.append(np.sum(self.particle.peptide))
 
-
-        #plt.plot(x_tracker[94000:],y_tracker[94000:])
-        #print(time[6000])
-        #print(time[94000])
-        #self.particle.PlotParticle()
-
-        """
-        plt.gca().set_aspect('equal')
-        plt.plot(x_tracker[:6000],y_tracker[:6000])
-        print(str(time[0])+" - "+str(time[6000]))
-        plt.plot(np.array(x_tracker[-6000:])-x_tracker[-6000],np.array(y_tracker[-6000:])- y_tracker[-6000])
-        print(str(time[-6000])+" - "+str(time[-1]))
-        plt.show()
-        """
 
         distance = []
         for j in range(len(x_tracker)):

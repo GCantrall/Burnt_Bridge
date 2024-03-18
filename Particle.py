@@ -19,7 +19,7 @@ class Particle:
 
         degree = self.GetDirection(new)
         peptide = self.peptide[new]
-        self.peptide[new] = 0
+        self.peptide[self.current] = 0
         self.previous = self.current
         self.current = new
 

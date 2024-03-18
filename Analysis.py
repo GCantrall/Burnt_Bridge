@@ -9,7 +9,7 @@ import os.path
 
 
 
-def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 16, replicates=1000, s_length=1000000, lp=20, tp=100, tb=2000, path = ""):
+def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 16, replicates=1000, s_length=1000000, lp=20, tp=100, tb=4000, path = ""):
     Data1 = DataSet(replicates=replicates,s_length=s_length,lp=lp,tp=tp,tb=tb,path=path, id=idMin, version=versionMin)
     Data1.LoadData()
     for id in range(idMin,idMax+1):
@@ -52,7 +52,7 @@ def PlotRunningMSD(Data):
     ax2_c.set_ylim(0, 600)
 
 
-Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, versionMax=1,tp=500,lp=20, tb=4000,path="DataFolder3")
+Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=8000,path="DataFolder4")
 #DataSet(tp=500,lp=100, tb=1000,id=1,version=2,path="DataFolder")
 
 #Data2  = DataSet(replicates=100,s_length=1000000, tp=500)
