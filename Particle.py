@@ -33,18 +33,64 @@ class Particle:
         cn = self.coordinates[new]
         if self.previous == new:
             return math.pi
-        co2 = [0,0]
-        cn2 = [0,0]
-        co2[0] = co[0] - cc[0]
-        co2[1] = co[1] - cc[1]
-        cn2[0] = cn[0] - cc[0]
-        cn2[1] = cn[1] - cc[1]
-        xo = math.sin(co2[1]) * math.cos(co2[0])
-        yo = math.sin(co2[1]) * math.sin(co2[0])
 
-        xn = math.sin(cn2[1]) * math.cos(cn2[0])
-        yn = math.sin(cn2[1]) * math.sin(cn2[0])
-        degree = math.acos((xo*xn+yo*yn)/(math.sqrt(math.pow(xo,2)+math.pow(yo,2))*math.sqrt(math.pow(xn,2)+math.pow(yn,2))))
+
+        xo = math.sin(co[1]) * math.cos(co[0])
+        yo = math.sin(co[1]) * math.sin(co[0])
+        zo = math.cos(co[1])
+
+        xc = math.sin(cc[1]) * math.cos(cc[0])
+        yc = math.sin(cc[1]) * math.sin(cc[0])
+        zc = math.cos(cc[1])
+
+
+        xn = math.sin(cn[1]) * math.cos(cn[0])
+        yn = math.sin(cn[1]) * math.sin(cn[0])
+        zn = math.cos(cn[1])
+
+
+
+
+        ko = -(xo*xc+yo*yc+zo*zc)/(pow(zc,2)+pow(xc,2)+pow(yc,2))
+        kn = -(xn*xc+yn*yc+zn*zc)/(pow(zc,2)+pow(xc,2)+pow(yc,2))
+
+        xo_p = xo+ko*xc
+        yo_p = yo+ko*yc
+        zo_p = zo+ko*zc
+
+        xn_p = xn+kn*xc
+        yn_p = yn+kn*yc
+        zn_p = zn+kn*zc
+
+
+        """
+        fig = plt.figure()
+
+        # add axes
+        ax = fig.add_subplot(111,projection='3d')
+
+        xx, yy = np.meshgrid(np.arange(-1,1,.1), np.arange(-1,1,.1))
+        z = -(xc*(xx-xc)+yc*(yy-yc))/zc+zc
+        ax.plot_surface(xx, yy, z, alpha=0.5)
+
+        u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+        x2 = np.cos(u)*np.sin(v)
+        y2 = np.sin(u)*np.sin(v)
+        z2 = np.cos(v)
+        ax.plot_wireframe(x2, y2, z2, color="r")
+        ax.set_zlim((-1.5, 1.5))
+        # plot the plane
+        ax.scatter(xo,yo,zo,c='r')
+        ax.scatter(xn,yn,zn,c='r')
+        ax.scatter(xc,yc,zc,c='g')
+        ax.scatter(xo_p,yo_p,zo_p,c='b')
+        ax.scatter(xn_p,yn_p,zn_p,c='b')
+        
+
+        plt.show()"""
+
+
+        degree = math.acos((xo_p*xn_p+yo_p*yn_p)/(math.sqrt(math.pow(xo_p,2)+math.pow(yo_p,2))*math.sqrt(math.pow(xn_p,2)+math.pow(yn_p,2))))+np.pi
         return degree
 
     def MaxCoords(self):
@@ -145,9 +191,22 @@ class Particle:
             self.edges.append(edgeList)
 
     def CreateFake(self):
+        count  = 1
+        self.edges = []
+        self.coordinates = []
+        self.current = 0
+        self.previous = 1
         for i in np.arange(0,2*math.pi,.1):
-            self.coordinates.append([0,i])
+            #self.coordinates.append([0,i])
             self.coordinates.append([i, math.pi/2])
+            edgelist = [count]
+            count = count + 1
+
+            self.edges.append(edgelist)
+        self.peptide = np.ones(count-1)
+        self.edges[-1] = [0]
+
+
 
     def GetDistance(self, coord1, coord2):
 

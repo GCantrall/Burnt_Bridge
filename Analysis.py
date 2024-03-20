@@ -52,7 +52,8 @@ def PlotRunningMSD(Data):
     ax2_c.set_ylim(0, 600)
 
 
-Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=8000,path="DataFolder4")
+
+Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="DataFile_1")
 #DataSet(tp=500,lp=100, tb=1000,id=1,version=2,path="DataFolder")
 
 #Data2  = DataSet(replicates=100,s_length=1000000, tp=500)

@@ -29,7 +29,7 @@ class Simulation:
     def SetNeighbors(self):
         self.neighbors = []
         for k in range(len(self.x_peptide)):
-            if(np.sqrt(math.pow(self.x_peptide[k]- self.x,2) + math.pow(self.y_peptide[k]- self.y,2))<2*self.peptide_size):
+            if(np.sqrt(math.pow(self.x_peptide[k]- self.x,2) + math.pow(self.y_peptide[k]- self.y,2))<4*self.peptide_size):
                 self.neighbors.append(k)
 
     def RunSimulation(self, totalTime):
@@ -44,14 +44,16 @@ class Simulation:
 
 
         self.peptide_remain = [600]
-        self.particle.CreateParticle()
+        #self.particle.CreateParticle()
+        self.particle.CreateFake()
+        #self.particle.PlotParticle()
         current_location = 0
         vector = [1.,0.]
         #self.particle.PlotParticle()
 
 
         while (time[-1]<totalTime):
-            if(len(time)%400==0):
+            if(len(time)%60==0):
                 self.SetNeighbors()
 
             #if(len(time)==10000):
@@ -87,9 +89,10 @@ class Simulation:
 
                 toClose = False
                 for k in self.neighbors:
-                    if(np.sqrt(math.pow(self.x_peptide[k]- x2,2) + math.pow(self.y_peptide[k]- y2,2))<self.peptide_size):
-                        toClose = True
-                        break
+                    for j in range(self.lp):
+                        if(np.sqrt(math.pow(self.x_peptide[k]- (self.x+x2_d*(j+1)),2) + math.pow(self.y_peptide[k]- (self.y+y2_d*(j+1)),2))<self.peptide_size):
+                            toClose = True
+                            break
                 if not toClose:
                     degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
                     vector = [x2_d,y2_d]
