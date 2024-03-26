@@ -43,17 +43,18 @@ class Simulation:
         self.neighbors = []
 
 
-        self.peptide_remain = [600]
+
         #self.particle.CreateParticle()
         self.particle.CreateFake()
         #self.particle.PlotParticle()
+        self.peptide_remain = [np.sum(self.particle.peptide)]
         current_location = 0
         vector = [1.,0.]
         #self.particle.PlotParticle()
 
 
         while (time[-1]<totalTime):
-            if(len(time)%60==0):
+            if(len(time)%30==0):
                 self.SetNeighbors()
 
             #if(len(time)==10000):
@@ -138,7 +139,8 @@ class Simulation:
             y_tracker.append(self.y)
             self.peptide_remain.append(np.sum(self.particle.peptide))
 
-
+        if self.peptide_remain[-1]!=0:
+            print(self.peptide_remain)
         distance = []
         for j in range(len(x_tracker)):
             distance.append(math.sqrt(math.pow(x_tracker[j],2)+math.pow(y_tracker[j],2)))

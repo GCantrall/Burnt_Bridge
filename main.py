@@ -95,7 +95,9 @@ if __name__ == '__main__':
             x_unif.append(x_tracker[k])
             y_unif.append(y_tracker[k])
         MSD = (i * MSD + np.array(GetMSD(x_unif, y_unif))) / (i + 1)
+
         RMSDw = (i * RMSDw + np.array(GetRMSDW(x_unif, y_unif, RMSDw_l))) / (i + 1)
+
         peptide_remaining = (i*peptide_remaining+np.array(peptide_unif))/(i+1)
 
     filename  = "Simulation_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"

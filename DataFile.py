@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os.path
 
 class DataSet:
-    def __init__(self, replicates=1000, s_length=1000000, lp=20, tp=100, tb=2000, id=-1, version=-1, path = ""):
+    def __init__(self, replicates=1000, s_length=1000000, lp=20, tp=100, tb=2000, id=-1, version=-1, path = "",name=""):
         self.replicates = replicates
         self.s_length = s_length
         self.lp = lp
@@ -20,6 +20,10 @@ class DataSet:
         self.MSD = []
         self.RMSDw = []
         self.timescale = []
+        if (name==""):
+            self.name = path
+        else:
+            self.name = name
 
 
     def LoadData(self):

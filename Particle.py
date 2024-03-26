@@ -62,35 +62,13 @@ class Particle:
         yn_p = yn+kn*yc
         zn_p = zn+kn*zc
 
+        v = (xo_p * xn_p + yo_p * yn_p) / (math.sqrt(math.pow(xo_p, 2) + math.pow(yo_p, 2)) * math.sqrt(math.pow(xn_p, 2) + math.pow(yn_p, 2)))
+        if v<-1:
+            v=-1
+        elif(v>1):
+            v=1
 
-        """
-        fig = plt.figure()
-
-        # add axes
-        ax = fig.add_subplot(111,projection='3d')
-
-        xx, yy = np.meshgrid(np.arange(-1,1,.1), np.arange(-1,1,.1))
-        z = -(xc*(xx-xc)+yc*(yy-yc))/zc+zc
-        ax.plot_surface(xx, yy, z, alpha=0.5)
-
-        u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-        x2 = np.cos(u)*np.sin(v)
-        y2 = np.sin(u)*np.sin(v)
-        z2 = np.cos(v)
-        ax.plot_wireframe(x2, y2, z2, color="r")
-        ax.set_zlim((-1.5, 1.5))
-        # plot the plane
-        ax.scatter(xo,yo,zo,c='r')
-        ax.scatter(xn,yn,zn,c='r')
-        ax.scatter(xc,yc,zc,c='g')
-        ax.scatter(xo_p,yo_p,zo_p,c='b')
-        ax.scatter(xn_p,yn_p,zn_p,c='b')
-        
-
-        plt.show()"""
-
-
-        degree = math.acos((xo_p*xn_p+yo_p*yn_p)/(math.sqrt(math.pow(xo_p,2)+math.pow(yo_p,2))*math.sqrt(math.pow(xn_p,2)+math.pow(yn_p,2))))+np.pi
+        degree = math.acos(v)+np.pi
         return degree
 
     def MaxCoords(self):
@@ -154,6 +132,8 @@ class Particle:
 
         plt.show()
 
+
+
     def CreateParticle(self):
 
         self.peptide = np.ones(600)
@@ -186,7 +166,7 @@ class Particle:
                     continue
                 c1 = self.coordinates[i]
                 c2 = self.coordinates[j]
-                if ((self.GetDistance(c1,c2 )))<.2:
+                if ((self.GetDistance(c1,c2 )))<.16:
                    edgeList.append(j)
             self.edges.append(edgeList)
 
