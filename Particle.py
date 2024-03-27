@@ -166,7 +166,7 @@ class Particle:
                     continue
                 c1 = self.coordinates[i]
                 c2 = self.coordinates[j]
-                if ((self.GetDistance(c1,c2 )))<.16:
+                if ((self.GetDistance(c1,c2 )))<.2:
                    edgeList.append(j)
             self.edges.append(edgeList)
 

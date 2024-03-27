@@ -6,7 +6,7 @@ import math
 import random
 
 class Simulation:
-    def __init__(self, _tp, _lp, _tb):
+    def __init__(self, _tp, _lp, _tb,_pType=""):
         self.particle = Particle()
         self.x = 0.
         self.y = 0.
@@ -18,6 +18,8 @@ class Simulation:
         self.tb = _tb
         self.peptide_remain = [600]
         self.neighbors = []
+        self.pType = _pType
+
 
     def PlotPath(self,x_tracker, y_tracker):
 
@@ -43,9 +45,12 @@ class Simulation:
         self.neighbors = []
 
 
-
+        if(self.pType=="c"):
+            self.particle.CreateFake()
+        else:
+            self.particle.CreateParticle()
         #self.particle.CreateParticle()
-        self.particle.CreateFake()
+        #self.particle.CreateFake()
         #self.particle.PlotParticle()
         self.peptide_remain = [np.sum(self.particle.peptide)]
         current_location = 0

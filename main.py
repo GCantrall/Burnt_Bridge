@@ -32,6 +32,7 @@ def GetParams():
     arguments = sys.argv
     w = 10000
     plot = -1
+    ptype = "n"
     for i in range(int((len(arguments)-1)/2)):
         if arguments[(2*i+1)] == "-s":
             s_length = int(arguments[2*i+2])
@@ -49,14 +50,17 @@ def GetParams():
             w = int(arguments[2*i+2])
         elif arguments[(2*i+1)] =="-p":
             plot = int(arguments[2*i+2])
+        elif arguments[(2*i+1)]== "-type":
+            ptype = arguments[2*i+2]
 
-    return [s_length, replicates, tp, lp, tb, id,w,plot]
+
+    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype]
 
 
 if __name__ == '__main__':
-    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot = GetParams()
+    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype = GetParams()
 
-    S = Simulation(tp,lp,tb)
+    S = Simulation(tp,lp,tb,ptype)
     times = []
 
     p = np.arange(0,1,.1)
@@ -117,7 +121,7 @@ if __name__ == '__main__':
 
 
 
-    np.savez(filename, peptides = peptide_remaining, MSD =MSD, RMSDw = RMSDw, timescale = timescale)
+    np.savez(filename, peptides = peptide_remaining, MSD =MSD, RMSDw = RMSDw, timescale = timescale, type = ptype)
 
 
 
