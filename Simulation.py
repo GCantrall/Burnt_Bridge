@@ -31,7 +31,7 @@ class Simulation:
     def SetNeighbors(self):
         self.neighbors = []
         for k in range(len(self.x_peptide)):
-            if(np.sqrt(math.pow(self.x_peptide[k]- self.x,2) + math.pow(self.y_peptide[k]- self.y,2))<4*self.peptide_size):
+            if(np.sqrt(math.pow(self.x_peptide[k]- self.x,2) + math.pow(self.y_peptide[k]- self.y,2))<(self.lp+2*self.peptide_size)):
                 self.neighbors.append(k)
 
     def RunSimulation(self, totalTime):
@@ -144,8 +144,6 @@ class Simulation:
             y_tracker.append(self.y)
             self.peptide_remain.append(np.sum(self.particle.peptide))
 
-        if self.peptide_remain[-1]!=0:
-            print(self.peptide_remain)
         distance = []
         for j in range(len(x_tracker)):
             distance.append(math.sqrt(math.pow(x_tracker[j],2)+math.pow(y_tracker[j],2)))

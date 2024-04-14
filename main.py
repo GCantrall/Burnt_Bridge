@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
 
 
-    np.savez(filename, peptides = peptide_remaining, MSD =MSD, RMSDw = RMSDw, timescale = timescale, type = ptype)
+    np.savez(filename, peptides = peptide_remaining, MSD =MSD, RMSDw = RMSDw, timescale = timescale, ptype=ptype)
 
 
 
