@@ -33,32 +33,25 @@ def PlotLogMSD(Data):
     ax2.set_ylabel("Peptides Remaining")
     ax1.set_xlabel("Time")
     ax1.set_ylabel("Mean Squared Distance")
-    ax1.plot((Data.timescale),(Data.MSD))
-    ax1.plot((Data.timescale),(Data.timescale))
+    ax1.plot((Data.timescale),(Data.MSD), c = 'g')
+    ax1.plot((Data.timescale),(Data.timescale),c='k')
     ax2.plot((Data.timescale),Data.peptides,c = 'r')
     ax2.set_ylim(0,np.max(Data.peptides))
 def PlotMultipleLogMSD(DataList):
     fig, ax1 = plt.subplots()
-    ax2 = ax1.twinx()
+    fig2,ax2 = plt.subplots()
+    #ax2 = ax1.twinx()
 
     ax1.set_yscale('log',base=10)
+    ax2.set_xscale('log',base=10)
+
     ax1.set_xscale('log',base=10)
     ax2.set_ylabel("Peptides Remaining")
     ax1.set_xlabel("Time")
+    ax2.set_xlabel("Time")
     ax1.set_ylabel("Mean Squared Distance")
 
-    cdict = {'red': ((0.0, 0.0, 0.0),
-                     (0.5, 0.5, 1.0),
-                     (1.0, 1.0, 1.0)),
 
-             'green': ((0.0, 0.0, 0.0),
-                       (0.5, 1.0, 1.0),
-                       (1.0, 0.0, 1.0)),
-
-             'blue': ((0.0, 0.0, 0.0),
-                      (0.5, 0.0, 1.0),
-                      (1.0, 0.0, 1.0))}
-    cmap = colors.LinearSegmentedColormap('custom', cdict)
     pepMax = 0
     maxTime =0
     count  = 0
@@ -68,8 +61,8 @@ def PlotMultipleLogMSD(DataList):
     countp =.5+diff
     maxTime = 0
     for Data in DataList:
-        ax1.plot((Data.timescale), (Data.MSD), label = Data.name,c=cmap(count))
-        ax2.plot((Data.timescale), Data.peptides, label = Data.name+" peptides",c=cmap(countp))
+        ax1.plot((Data.timescale), (Data.MSD), label = Data.name)
+        ax2.plot((Data.timescale), Data.peptides, label = Data.name)
         count = count+diff
         countp = countp+diff
         if pepMax < np.max(Data.peptides):
@@ -77,10 +70,10 @@ def PlotMultipleLogMSD(DataList):
         if(maxTime<np.max(Data.timescale)):
             maxTime=np.max(Data.timescale)
 
-    ax1.plot([0,maxTime], [0,maxTime],c='k')
-
+    ax1.plot([0,maxTime], [0,maxTime],c='k',linestyle='--', label = "Normal Diffusion")
+    ax1.plot(np.arange(0, maxTime), np.arange(0, maxTime)*4.8, c='grey', linestyle='--', label = "Rolling Diffusion")
     ax1.legend()
-    ax2.legend(loc='center left')
+    ax2.legend()
     ax2.set_ylim(0, pepMax)
     ax1.set_xlim(100, DataList[0].timescale[-1])
     ax1.set_ylim(bottom=100)
@@ -135,29 +128,40 @@ def plotTestFunction():
 #plotTestFunction()
 #plt.show()
 
-Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Augmented", name="Normal")
-Data2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Augmented", name="Half Insertion Rate")
-Data3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=40, tb=4000,path="Augmented", name="Douple Move Distance")
+#Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Augmented", name="Normal")
+#Data2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Augmented", name="Half Insertion Rate")
+#Data3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=40, tb=4000,path="Augmented", name="Douple Move Distance")
 
-Distince1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Normal")
-Distince2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Distince", name="Half Insertion Rate")
-Distince3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Distince", name="Douple Move Distance")
 
+
+#Distince1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Normal")
+#Distince2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Distince", name="Half Insertion Rate")
+#Distince3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Distince", name="Douple Move Distance")
+
+
+"""
 Normal1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Normal", name="Normal")
 Normal2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Normal", name="Half Insertion Rate")
 Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Normal", name="Douple Move Distance")
+"""
+
+Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Augmented", name="Blocked")
+unblocked  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Unblocked", name="Unblocked")
+#directional  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Directional")
+
+PlotMultipleLogMSD([Data1,unblocked])
 #DataSet(tp=500,lp=100, tb=1000,id=1,version=2,path="DataFolder")
 
 #Data2  = DataSet(replicates=100,s_length=1000000, tp=500)
 
-#PlotMultipleLogMSD([Data1,Data2,Data3])
+#PlotMultipleLogMSD([Data1])
 #
 
-PlotMultipleLogMSD([Data1,Data2, Data3])
+#PlotMultipleLogMSD([Data1,Data2, Data3])
 
-PlotMultipleLogMSD([Distince1,Distince2, Distince3])
+#PlotMultipleLogMSD([Distince1,Distince2, Distince3])
 
-PlotMultipleLogMSD([Normal1,Normal2, Normal3])
+#PlotMultipleLogMSD([Normal1,Normal2, Normal3])
 
 #Data2.LoadData()
 
