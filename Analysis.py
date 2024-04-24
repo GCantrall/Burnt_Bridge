@@ -9,7 +9,7 @@ from matplotlib import colors
 import os.path
 
 
-
+"""Loads a group of Dataset objects and averages the values"""
 def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 16, replicates=1000, s_length=1000000, lp=20, tp=100, tb=4000, path = "", name=""):
     Data1 = DataSet(replicates=replicates,s_length=s_length,lp=lp,tp=tp,tb=tb,path=path, id=idMin, version=versionMin, name= name)
     Data1.LoadData()
@@ -24,6 +24,7 @@ def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 16, replicates=
     return Data1
 
 
+"""Plots Log of the Mean Squared Distance"""
 def PlotLogMSD(Data):
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
@@ -37,6 +38,8 @@ def PlotLogMSD(Data):
     ax1.plot((Data.timescale),(Data.timescale),c='k')
     ax2.plot((Data.timescale),Data.peptides,c = 'r')
     ax2.set_ylim(0,np.max(Data.peptides))
+
+""" Plots multiple LogMSD graphs on the same plot"""
 def PlotMultipleLogMSD(DataList):
     fig, ax1 = plt.subplots()
     fig2,ax2 = plt.subplots()
@@ -78,6 +81,8 @@ def PlotMultipleLogMSD(DataList):
     ax1.set_xlim(100, DataList[0].timescale[-1])
     ax1.set_ylim(bottom=100)
     ax2.set_xlim(100, DataList[0].timescale[-1])
+
+"""Plots Total means squared distance vs time"""
 def PlotTotalMSD(Data):
 
     fig2, ax1_b = plt.subplots()
@@ -103,6 +108,8 @@ def PlotRunningRMSD(Data):
     ax1_c.set_xlabel("Time")
     ax1_c.set_ylabel("Running Root Mean Squared Distance ")
 
+def PlotAngleFrequency(Data):
+    plt.plot(np.arange(len(Data.angles) - 1) / (10) - np.pi, Data.angles[1:] / sum(Data.angles[1:]))
 
 def plotTestFunction():
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -125,6 +132,9 @@ def plotTestFunction():
         # Plot 50 lines, from y = 0 to y = 1, taking a corresponding value from the cmap
         ax.plot([-1, 1], [i, i], c=cmap(i))
 
+def PlotKuhn(Data):
+    plt.boxplot(Data.Kuhn,0,'')
+    print(np.min(Data.Kuhn))
 #plotTestFunction()
 #plt.show()
 
@@ -137,7 +147,7 @@ def plotTestFunction():
 #Distince1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Normal")
 #Distince2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Distince", name="Half Insertion Rate")
 #Distince3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Distince", name="Douple Move Distance")
-
+x = np.arccos(1)
 
 """
 Normal1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Normal", name="Normal")
@@ -145,11 +155,16 @@ Normal2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax
 Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Normal", name="Douple Move Distance")
 """
 
-Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Augmented", name="Blocked")
-unblocked  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Unblocked", name="Unblocked")
-#directional  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Directional")
+#Data = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked", name="Normal")
 
-PlotMultipleLogMSD([Data1,unblocked])
+#Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Augmented", name="Blocked")
+#unblocked  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Unblocked", name="Unblocked")
+#directional  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Directional")
+Data = DataSet(replicates=20000,s_length=10000)
+Data.LoadData()
+#PlotMultipleLogMSD([Data1,unblocked])
+#PlotKuhn(Data)
+PlotAngleFrequency(Data)
 #DataSet(tp=500,lp=100, tb=1000,id=1,version=2,path="DataFolder")
 
 #Data2  = DataSet(replicates=100,s_length=1000000, tp=500)

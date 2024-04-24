@@ -6,7 +6,7 @@ import math
 import random
 
 class Simulation:
-    def __init__(self, _tp, _lp, _tb,_pType=""):
+    def __init__(self, _tp, _lp, _tb,_pType="", _analytic = -1):
         self.particle = Particle()
         self.x = 0.
         self.y = 0.
@@ -19,6 +19,7 @@ class Simulation:
         self.peptide_remain = [600]
         self.neighbors = []
         self.pType = _pType
+        self.analytic = _analytic
 
 
     def PlotPath(self,x_tracker, y_tracker):
@@ -43,6 +44,10 @@ class Simulation:
         self.x_peptide = []
         self.y_peptide = []
         self.neighbors = []
+        previousLength = 1
+        numDiff = 0
+        numRoll = 0
+        angle = []
 
 
         if(self.pType=="c"):
@@ -106,9 +111,33 @@ class Simulation:
                     self.x_peptide.append(self.x)
                     self.y_peptide.append(self.y)
                     self.neighbors.append(len(self.neighbors))
+
+                    if False and self.analytic != -1 and len(x_tracker)>1:
+                        a = [0, 0]
+                        l = 2
+                        while (a[0] == 0 and a[1] == 0):
+                            a = np.array([self.x - x_tracker[-l], self.y - y_tracker[-l]])
+                            l += 1
+                        b = np.array([x2 - self.x, y2 - self.y])
+                        ncross = np.cross(a, b)
+                        diff = np.dot(a, b) / (previousLength*self.lp)
+                        if diff > 1:
+                            diff = .999999
+                        elif (diff < -1):
+                            diff = -.9999999
+
+                        if(ncross==0):
+                            angle.append(0)
+                        else:
+                            angle.append(np.arccos(diff) * ncross / np.sqrt(ncross.dot(ncross)))
+                        if math.isnan(angle[-1]):
+                            print("NANNANNANA")
+
+
                     self.x = x2
                     self.y = y2
-
+                    numRoll = numRoll+1
+                    previousLength = self.lp
                     current_location = withPeptide[chosen]
 
             elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))):
@@ -136,20 +165,49 @@ class Simulation:
                         break
 
                 if not toClose:
+
+                    if False and self.analytic != -1 and len(x_tracker) > 1:
+                        a = [0,0]
+                        l = 2
+                        while(a[0]==0 and a[1] == 0):
+                            a = np.array([self.x - x_tracker[-l], self.y-y_tracker[-l]])
+                            l +=1
+                        a1 = x_tracker[-2]
+                        a2 = y_tracker[-2]
+                        b = np.array([x2-self.x, y2-self.y])
+                        ncross = np.cross(a,b)
+                        diff = np.dot(a,b)/(previousLength)
+                        if diff>1:
+                            diff=.9999999
+                        elif(diff<-1):
+                            diff = -.9999999
+                        if(ncross==0):
+                            angle.append(0)
+                        else:
+                            angle.append(np.arccos(diff) * ncross / np.sqrt(ncross.dot(ncross)))
+                        if math.isnan(angle[-1]):
+                            print("NANNANNANA")
+
+
+
                     self.x = x2
                     self.y = y2
+                    numDiff = numDiff+1
+                    previousLength = 1
+
 
 
             x_tracker.append(self.x)
             y_tracker.append(self.y)
             self.peptide_remain.append(np.sum(self.particle.peptide))
 
-        distance = []
-        for j in range(len(x_tracker)):
-            distance.append(math.sqrt(math.pow(x_tracker[j],2)+math.pow(y_tracker[j],2)))
-        #self.PlotMSD(time, distance)
-        return time, x_tracker, y_tracker
+        if self.analytic != -1:
+            lContour = self.ld*numDiff+self.lp*numRoll
+            Kuhn = (np.power(self.x,2)+np.power(self.y,2))/lContour
 
+            return time, x_tracker, y_tracker, [Kuhn, angle]
+        else:
+            return time, x_tracker, y_tracker
 
 
 
