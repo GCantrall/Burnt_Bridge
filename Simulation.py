@@ -6,7 +6,7 @@ import math
 import random
 
 class Simulation:
-    def __init__(self, _tp, _lp, _tb,_pType="", _analytic = -1):
+    def __init__(self, _tp, _lp, _tb,_tc,_pType="", _analytic = -1,_kb= 200):
         self.particle = Particle()
         self.x = 0.
         self.y = 0.
@@ -20,7 +20,21 @@ class Simulation:
         self.neighbors = []
         self.pType = _pType
         self.analytic = _analytic
+        self.energy = 0
+        self.kb= _kb
+        self.tc =_tc
 
+    def CalculateEnergy(self,x2,y2):
+        energy = 0
+        for k in self.neighbors:
+            dist = np.sqrt(math.pow(self.x_peptide[k] - x2, 2) + math.pow(self.y_peptide[k] - y2, 2))
+
+            if (dist < self.peptide_size):
+                if dist<.1:
+                    energy = 10+energy
+                else:
+                    energy = 1/dist+energy
+        return energy
 
     def PlotPath(self,x_tracker, y_tracker):
 
@@ -81,66 +95,33 @@ class Simulation:
             time.append(time[-1] + -math.log(random.random())/(len(withPeptide)/self.tp+1/self.td+len(withoutPeptide)/self.tb))
 
             rand = random.random()
-            if(rand<(len(withPeptide)/(self.tp))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))):
+            totalChance = (len(withPeptide) / (self.tp) +
+                           1 / self.td +
+                           len(withoutPeptide) / (self.tb)+
+                           self.particle.peptide[current_location]/self.tc)
+            if(rand<(self.particle.peptide[current_location]/self.tc)/totalChance):
+
                 self.SetNeighbors()
+                self.x_peptide.append(self.x)
+                self.y_peptide.append(self.y)
+                self.neighbors.append(len(self.x_peptide)-1)
+                self.energy = self.energy+10
+                self.particle.peptide[current_location] = 0
+
+            elif (rand < (len(withPeptide) / (self.tp) +self.particle.peptide[current_location]/self.tc) /totalChance):
                 choice  = random.random()*len(withPeptide)
                 chosen = -1
                 for i in range(len(withPeptide)):
                     if choice< (i+1):
                         chosen = i
                         break
+                degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
+                x2 = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
+                y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
+                vector = [x2,y2]
+                current_location = withPeptide[chosen]
 
-
-                degree = self.particle.GetDirection(withPeptide[chosen])
-                x2_d = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
-                y2_d = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
-
-                x2 = self.x+x2_d*self.lp
-                y2 =self.y+y2_d*self.lp
-
-                toClose = False
-                for k in self.neighbors:
-                    for j in range(self.lp):
-                        if(np.sqrt(math.pow(self.x_peptide[k]- (self.x+x2_d*(j+1)),2) + math.pow(self.y_peptide[k]- (self.y+y2_d*(j+1)),2))<self.peptide_size):
-                            toClose = True
-                            break
-                if not toClose:
-                    degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
-                    vector = [x2_d,y2_d]
-
-                    self.x_peptide.append(self.x)
-                    self.y_peptide.append(self.y)
-                    self.neighbors.append(len(self.neighbors))
-
-                    if False and self.analytic != -1 and len(x_tracker)>1:
-                        a = [0, 0]
-                        l = 2
-                        while (a[0] == 0 and a[1] == 0):
-                            a = np.array([self.x - x_tracker[-l], self.y - y_tracker[-l]])
-                            l += 1
-                        b = np.array([x2 - self.x, y2 - self.y])
-                        ncross = np.cross(a, b)
-                        diff = np.dot(a, b) / (previousLength*self.lp)
-                        if diff > 1:
-                            diff = .999999
-                        elif (diff < -1):
-                            diff = -.9999999
-
-                        if(ncross==0):
-                            angle.append(0)
-                        else:
-                            angle.append(np.arccos(diff) * ncross / np.sqrt(ncross.dot(ncross)))
-                        if math.isnan(angle[-1]):
-                            print("NANNANNANA")
-
-
-                    self.x = x2
-                    self.y = y2
-                    numRoll = numRoll+1
-                    previousLength = self.lp
-                    current_location = withPeptide[chosen]
-
-            elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb))/(len(withPeptide)/(self.tp)+1/self.td+len(withoutPeptide)/(self.tb))):
+            elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb) +self.particle.peptide[current_location]/self.tc)/(totalChance)):
                 choice  = random.random()*len(withoutPeptide)
                 chosen = -1
                 for i in range(len(withoutPeptide)):
@@ -155,47 +136,17 @@ class Simulation:
             else:
                 degree = random.random()*2*math.pi
 
-                x2 = self.x+self.ld*math.cos(degree)
-                y2 = self.y+self.ld*math.sin(degree)
-                toClose = False
+                x2 = self.x+(self.ld+1-self.particle.peptide[current_location])*math.cos(degree)
+                y2 = self.y+(self.ld+1-self.particle.peptide[current_location])*math.sin(degree)
 
-                for k in self.neighbors:
-                    if(np.sqrt(math.pow(self.x_peptide[k]- x2,2) + math.pow(self.y_peptide[k]- y2,2))<self.peptide_size):
-                        toClose = True
-                        break
+                energy_n = self.CalculateEnergy(x2,y2)
 
-                if not toClose:
-
-                    if False and self.analytic != -1 and len(x_tracker) > 1:
-                        a = [0,0]
-                        l = 2
-                        while(a[0]==0 and a[1] == 0):
-                            a = np.array([self.x - x_tracker[-l], self.y-y_tracker[-l]])
-                            l +=1
-                        a1 = x_tracker[-2]
-                        a2 = y_tracker[-2]
-                        b = np.array([x2-self.x, y2-self.y])
-                        ncross = np.cross(a,b)
-                        diff = np.dot(a,b)/(previousLength)
-                        if diff>1:
-                            diff=.9999999
-                        elif(diff<-1):
-                            diff = -.9999999
-                        if(ncross==0):
-                            angle.append(0)
-                        else:
-                            angle.append(np.arccos(diff) * ncross / np.sqrt(ncross.dot(ncross)))
-                        if math.isnan(angle[-1]):
-                            print("NANNANNANA")
-
-
-
+                if (energy_n-self.energy<=0 or random.random()<np.exp(-self.kb*(energy_n-self.energy))):
+                    self.energy= energy_n
                     self.x = x2
                     self.y = y2
                     numDiff = numDiff+1
                     previousLength = 1
-
-
 
             x_tracker.append(self.x)
             y_tracker.append(self.y)

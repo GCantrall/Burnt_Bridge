@@ -32,6 +32,7 @@ def GetParams():
     arguments = sys.argv
     w = 10000
     plot = -1
+    tc = 200
     analytic = -1
     ptype = "n"
     for i in range(int((len(arguments)-1)/2)):
@@ -55,15 +56,17 @@ def GetParams():
             ptype = arguments[2*i+2]
         elif arguments[(2*i+1)]== "-a":
             analytic = arguments[2*i+2]
+        elif arguments[(2*i+1)]== "-tc":
+            tc = arguments[2*i+2]
 
 
-    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype, analytic]
+    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype, analytic, tc]
 
 
 if __name__ == '__main__':
-    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic = GetParams()
+    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic, tc = GetParams()
 
-    S = Simulation(tp,lp,tb,ptype, analytic)
+    S = Simulation(tp,lp,tb,tc, ptype, analytic)
     times = []
 
     p = np.arange(0,1,.1)
