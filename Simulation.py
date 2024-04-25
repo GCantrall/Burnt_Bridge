@@ -110,7 +110,7 @@ class Simulation:
 
                     self.x_peptide.append(self.x)
                     self.y_peptide.append(self.y)
-                    self.neighbors.append(len(self.neighbors))
+                    self.neighbors.append(len(self.x_peptide-1))
 
                     if False and self.analytic != -1 and len(x_tracker)>1:
                         a = [0, 0]
