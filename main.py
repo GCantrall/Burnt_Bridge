@@ -88,39 +88,35 @@ if __name__ == '__main__':
             time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulation(s_length)
 
             KuhnTotal.append(Kuhn)
-            #angleDist = np.zeros(round(2 * np.pi * 100) + 1)
-            #for angle in angles:
-            #    angleDist[round((angle+np.pi)*100)] +=1
-            #angleDist[0] +=angleDistTotal[-1]
-            #angleDist = angleDist[:-1]
-            #angleDistTotal = (i * angleDistTotal + angleDist)/(i + 1)
-
 
         else:
             time, x_tracker, y_tracker = S.RunSimulation(s_length)
+        k = 0
+        peptide_unif = []
+        x_unif = []
+        y_unif = []
+        for j in range(len(timescale)):
+            while True:
+                if time[k + 1] < timescale[j]:
+                    k = k + 1
+                else:
+                    break
+
+            peptide_unif.append(S.peptide_remain[k])
+            x_unif.append(x_tracker[k])
+            y_unif.append(y_tracker[k])
         if(plot!=-1):
             if(plot==1 or plot==3):
                 S.PlotPath(x_tracker,y_tracker)
             if(plot==2 or plot==3):
                 S.particle.PlotParticle()
+            if(plot==4):
+                S.PlotPathRange(timescale,x_unif,y_unif)
             plt.show()
-        peptide_unif = []
-        x_unif = []
-        y_unif = []
-
-        k = 0
-
-        for j in range(len(timescale)):
-            while True:
-                if time[k+1] < timescale[j]:
-                    k = k+1
-                else:
-                    break
 
 
-            peptide_unif.append(S.peptide_remain[k])
-            x_unif.append(x_tracker[k])
-            y_unif.append(y_tracker[k])
+
+
 
         if analytic != -1:
             a = [1,0]

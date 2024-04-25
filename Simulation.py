@@ -14,7 +14,7 @@ class Simulation:
         self.td = 1
         self.lp = _lp
         self.ld = 1.
-        self.peptide_size = 10
+        self.peptide_size = 20
         self.tb = _tb
         self.peptide_remain = [600]
         self.neighbors = []
@@ -41,6 +41,17 @@ class Simulation:
         plt.gca().set_aspect('equal')
         plt.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1)
         plt.plot(x_tracker, y_tracker,c = 'r', zorder=0)
+
+    def PlotPathRange(self,time,x_tracker,y_tracker):
+        x = []
+        y = []
+        for i in range(len(time)):
+            if time[i]%25 ==0:
+                x.append(x_tracker[i])
+                y.append(y_tracker[i])
+        plt.gca().set_aspect('equal')
+        plt.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1)
+        plt.plot(x, y,c = 'r', zorder=0)
 
 
     def SetNeighbors(self):
