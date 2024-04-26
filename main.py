@@ -106,11 +106,11 @@ if __name__ == '__main__':
             x_unif.append(x_tracker[k])
             y_unif.append(y_tracker[k])
         if(plot!=-1):
-            if(plot==1 or plot==3):
+            if(plot==1 or plot==3 or plot ==5):
                 S.PlotPath(x_tracker,y_tracker)
             if(plot==2 or plot==3):
                 S.particle.PlotParticle()
-            if(plot==4):
+            if(plot==4 or plot == 5):
                 S.PlotPathRange(timescale,x_unif,y_unif)
             plt.show()
 

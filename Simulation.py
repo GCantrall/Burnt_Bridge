@@ -38,20 +38,22 @@ class Simulation:
 
     def PlotPath(self,x_tracker, y_tracker):
 
-        plt.gca().set_aspect('equal')
-        plt.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1)
-        plt.plot(x_tracker, y_tracker,c = 'r', zorder=0)
+        fig, ax1 = plt.subplots()
+        ax1.set_aspect('equal')
+        ax1.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1)
+        ax1.plot(x_tracker, y_tracker,c = 'r', zorder=0)
 
     def PlotPathRange(self,time,x_tracker,y_tracker):
         x = []
         y = []
+        fig, ax1 = plt.subplots()
         for i in range(len(time)):
             if time[i]%25 ==0:
                 x.append(x_tracker[i])
                 y.append(y_tracker[i])
-        plt.gca().set_aspect('equal')
-        plt.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1)
-        plt.plot(x, y,c = 'r', zorder=0)
+        ax1.set_aspect('equal')
+        ax1.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1)
+        ax1.plot(x, y,c = 'r', zorder=0)
 
 
     def SetNeighbors(self):
