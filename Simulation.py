@@ -102,7 +102,7 @@ class Simulation:
                 for k in self.neighbors:
                     for j in range(self.lp):
                         if(np.sqrt(math.pow(self.x_peptide[k]- (self.x+x2_d*(j+1)),2) + math.pow(self.y_peptide[k]- (self.y+y2_d*(j+1)),2))<self.peptide_size):
-                            toClose = True
+                            #toClose = True
                             break
                 if not toClose:
                     degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
@@ -110,28 +110,9 @@ class Simulation:
 
                     self.x_peptide.append(self.x)
                     self.y_peptide.append(self.y)
-                    self.neighbors.append(len(self.x_peptide-1))
+                    self.neighbors.append(len(self.x_peptide)-1)
 
-                    if False and self.analytic != -1 and len(x_tracker)>1:
-                        a = [0, 0]
-                        l = 2
-                        while (a[0] == 0 and a[1] == 0):
-                            a = np.array([self.x - x_tracker[-l], self.y - y_tracker[-l]])
-                            l += 1
-                        b = np.array([x2 - self.x, y2 - self.y])
-                        ncross = np.cross(a, b)
-                        diff = np.dot(a, b) / (previousLength*self.lp)
-                        if diff > 1:
-                            diff = .999999
-                        elif (diff < -1):
-                            diff = -.9999999
 
-                        if(ncross==0):
-                            angle.append(0)
-                        else:
-                            angle.append(np.arccos(diff) * ncross / np.sqrt(ncross.dot(ncross)))
-                        if math.isnan(angle[-1]):
-                            print("NANNANNANA")
 
 
                     self.x = x2
@@ -161,35 +142,10 @@ class Simulation:
 
                 for k in self.neighbors:
                     if(np.sqrt(math.pow(self.x_peptide[k]- x2,2) + math.pow(self.y_peptide[k]- y2,2))<self.peptide_size):
-                        toClose = True
+                        #toClose = True
                         break
 
                 if not toClose:
-
-                    if False and self.analytic != -1 and len(x_tracker) > 1:
-                        a = [0,0]
-                        l = 2
-                        while(a[0]==0 and a[1] == 0):
-                            a = np.array([self.x - x_tracker[-l], self.y-y_tracker[-l]])
-                            l +=1
-                        a1 = x_tracker[-2]
-                        a2 = y_tracker[-2]
-                        b = np.array([x2-self.x, y2-self.y])
-                        ncross = np.cross(a,b)
-                        diff = np.dot(a,b)/(previousLength)
-                        if diff>1:
-                            diff=.9999999
-                        elif(diff<-1):
-                            diff = -.9999999
-                        if(ncross==0):
-                            angle.append(0)
-                        else:
-                            angle.append(np.arccos(diff) * ncross / np.sqrt(ncross.dot(ncross)))
-                        if math.isnan(angle[-1]):
-                            print("NANNANNANA")
-
-
-
                     self.x = x2
                     self.y = y2
                     numDiff = numDiff+1

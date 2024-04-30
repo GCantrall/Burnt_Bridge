@@ -146,17 +146,19 @@ if __name__ == '__main__':
 
             angleDist = np.zeros(round(2 * np.pi * 10) + 1)
             for angle in angles:
-                angleDist[int(round((angle+np.pi)*10))] +=1
+                angleDist[int(math.floor((angle+np.pi)*10))] +=1
             angleDist[0] +=angleDistTotal[-1]
             angleDist = angleDist[:-1]
             angleDistTotal = (i * angleDistTotal + angleDist)/(i + 1)
+
 
         MSD = (i * MSD + np.array(GetMSD(x_unif, y_unif))) / (i + 1)
 
         RMSDw = (i * RMSDw + np.array(GetRMSDW(x_unif, y_unif, RMSDw_l))) / (i + 1)
 
         peptide_remaining = (i*peptide_remaining+np.array(peptide_unif))/(i+1)
-
+    plt.plot(angleDistTotal[1:-1])
+    plt.show()
     filename  = "Simulation_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
     if id != -1:
         filename = filename+"_"+str(id)
