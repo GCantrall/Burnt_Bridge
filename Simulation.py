@@ -102,7 +102,7 @@ class Simulation:
                 for k in self.neighbors:
                     for j in range(self.lp):
                         if(np.sqrt(math.pow(self.x_peptide[k]- (self.x+x2_d*(j+1)),2) + math.pow(self.y_peptide[k]- (self.y+y2_d*(j+1)),2))<self.peptide_size):
-                            #toClose = True
+                            toClose = True
                             break
                 if not toClose:
                     degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
@@ -142,7 +142,7 @@ class Simulation:
 
                 for k in self.neighbors:
                     if(np.sqrt(math.pow(self.x_peptide[k]- x2,2) + math.pow(self.y_peptide[k]- y2,2))<self.peptide_size):
-                        #toClose = True
+                        toClose = True
                         break
 
                 if not toClose:

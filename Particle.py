@@ -62,14 +62,25 @@ class Particle:
         yn_p = yn+kn*yc
         zn_p = zn+kn*zc
 
-        v = (xo_p * xn_p + yo_p * yn_p) / (math.sqrt(math.pow(xo_p, 2) + math.pow(yo_p, 2)) * math.sqrt(math.pow(xn_p, 2) + math.pow(yn_p, 2)))
+        e1 = np.array([xo_p-xc,yo_p-yc,zo_p-zc])
+        e1 = e1/(np.sqrt(np.dot(e1,e1)))
+        e2 = np.cross(e1,np.array([xc,yc,zc]))
+
+        e = np.c_[e1,e2]
+        t = np.dot(e1,e2)
+
+        v1 = np.dot(e.T,np.array([xo_p,yo_p,zo_p]))
+        v2 = np.dot(e.T,np.array([xn_p,yn_p,zn_p]))
+        plt.plot([0,v1[0]], [0,v1[1]])
+        plt.plot([0,v2[0]], [0,v2[1]])
+        v = (v1[0] * v2[0] + v1[1] * v2[1]) / (math.sqrt(math.pow(v1[0], 2) + math.pow(v1[1], 2)) * math.sqrt(math.pow(v2[0], 2) + math.pow(v2[1], 2)))
         if v<-1:
             v=-1
         elif(v>1):
             v=1
 
-        degree = math.acos(v)+np.pi
-        return degree
+        degree = math.acos(v)
+        return degree+np.pi
 
     def MaxCoords(self):
         maxx= 0
@@ -178,7 +189,8 @@ class Particle:
         self.previous = 1
         for i in np.arange(0,2*math.pi,.1):
             #self.coordinates.append([0,i])
-            self.coordinates.append([i, math.pi/2])
+
+            self.coordinates.append([i, math.pi / 2 ])
             edgelist = [count]
             count = count + 1
 
