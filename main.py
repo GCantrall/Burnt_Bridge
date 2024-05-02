@@ -147,7 +147,7 @@ if __name__ == '__main__':
             angleDist = np.zeros(round(2 * np.pi * 10) + 1)
             for angle in angles:
                 angleDist[int(math.floor((angle+np.pi)*10))] +=1
-            angleDist[0] +=angleDistTotal[-1]
+            #angleDist[0] +=angleDistTotal[-1]
             angleDist = angleDist[:-1]
             angleDistTotal = (i * angleDistTotal + angleDist)/(i + 1)
 

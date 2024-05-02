@@ -74,7 +74,7 @@ def PlotMultipleLogMSD(DataList):
             maxTime=np.max(Data.timescale)
 
     ax1.plot([0,maxTime], [0,maxTime],c='k',linestyle='--', label = "Normal Diffusion")
-    ax1.plot(np.arange(0, maxTime), np.arange(0, maxTime)*4.8, c='grey', linestyle='--', label = "Rolling Diffusion")
+    ax1.plot(np.arange(0, maxTime), np.arange(0, maxTime)*2, c='grey', linestyle='--', label = "Double Diffusion")
     ax1.legend()
     ax2.legend()
     ax2.set_ylim(0, pepMax)
@@ -161,17 +161,23 @@ Normal1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax
 Normal2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Normal", name="Half Insertion Rate")
 Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Normal", name="Douple Move Distance")
 """
+
 #Data = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsive", name="Repulsive")
+"""
 Data1 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffusion_Only", name="Pure Diffusive")
 Data2 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")
 Data3  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Blocked_Update", name="Blocked")
-#unblocked  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Unblocked", name="Unblocked")
-#directional  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Directional")
+"""
+
+Normal  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion", name="Normal")
+Fast  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=100,lp=20, tb=4000,path="Analytics_Repulsion", name="Fast insertion ")
 #Data = DataSet(replicates=20000,s_length=10000)
+
 #Data.LoadData()
-#PlotMultipleLogMSD([Data,Data1])
+#PlotMultipleLogMSD([Normal,Fast])
 #PlotKuhn(Data)
-PlotMultipleAngleFrequency([Data1,Data2,Data3])
+#PlotMultipleAngleFrequency([Data1,Data2,Data3])
+PlotMultipleAngleFrequency([Normal,Fast])
 #PlotAngleFrequency(Data2)
 #PlotAngleFrequency(Data3)
 #PlotAngleFrequency(Data1)
