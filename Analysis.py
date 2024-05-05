@@ -145,7 +145,7 @@ def PlotKuhn(Data):
 
 
 
-Distince1  = LoadGroup(replicates=10000, idMin=1,idMax=20,versionMin=1, s_length=10000, versionMax=3,tp=500,lp=20, tb=4000,path="Analytics_Directional_Updated_Angle", name="Normal")
+#Distince1  = LoadGroup(replicates=10000, idMin=1,idMax=20,versionMin=1, s_length=10000, versionMax=3,tp=500,lp=20, tb=4000,path="Analytics_Directional_Updated_Angle", name="Normal")
 #Distince2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Distince", name="Half Insertion Rate")
 #Distince3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Distince", name="Douple Move Distance")
 
@@ -155,19 +155,19 @@ Normal1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax
 Normal2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Normal", name="Half Insertion Rate")
 Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Normal", name="Douple Move Distance")
 """
-Data = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsive", name="Repulsive")
-Data1 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")
-Data2 = LoadGroup(idMin=1,idMax=20,replicates= 1000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked", name="Unblocked2")
+#Data = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsive", name="Repulsive")
+#Data1 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")
+#Data2 = LoadGroup(idMin=1,idMax=20,replicates= 1000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked", name="Unblocked2")
 #Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Augmented", name="Blocked")
 #unblocked  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Unblocked", name="Unblocked")
 #directional  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Directional")
-#Data = DataSet(replicates=20000,s_length=10000)
-#Data.LoadData()
+Data = DataSet(replicates=500,s_length=10000,version=2)
+Data.LoadData()
 #PlotMultipleLogMSD([Data,Data1])
 #PlotKuhn(Data)
 #PlotAngleFrequency(Data2)
-PlotAngleFrequency(Data1)
-PlotAngleFrequency(Distince1)
+PlotAngleFrequency(Data)
+#PlotAngleFrequency(Distince1)
 #DataSet(tp=500,lp=100, tb=1000,id=1,version=2,path="DataFolder")
 
 #Data2  = DataSet(replicates=100,s_length=1000000, tp=500)

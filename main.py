@@ -128,7 +128,8 @@ if __name__ == '__main__':
                     b = [x_unif[j] - prev_coords[0], y_unif[j] - prev_coords[1]]
                     ncross = np.cross(a, b)
                     dist = np.sqrt(np.power(b[0],2)+np.power(b[1],2))
-
+                    if(b[0] ==0 and b[1] ==0):
+                        continue
                     diff = np.dot(a, b) / (prev_dist*dist)
                     if diff > 1:
                         diff = .999999
@@ -146,7 +147,7 @@ if __name__ == '__main__':
             angleDist = np.zeros(round(2 * np.pi * 10) + 1)
             for angle in angles:
                 angleDist[int(round((angle+np.pi)*10))] +=1
-            angleDist[0] +=angleDistTotal[-1]
+            angleDist[0] +=angleDist[-1]
             angleDist = angleDist[:-1]
             angleDistTotal = (i * angleDistTotal + angleDist)/(i + 1)
 
