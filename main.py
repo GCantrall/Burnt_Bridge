@@ -95,12 +95,7 @@ if __name__ == '__main__':
 
         else:
             time, x_tracker, y_tracker = S.RunSimulation(s_length)
-        if(plot!=-1):
-            if(plot==1 or plot==3):
-                S.PlotPath(x_tracker,y_tracker)
-            if(plot==2 or plot==3):
-                S.particle.PlotParticle()
-            plt.show()
+
         peptide_unif = []
         x_unif = []
         y_unif = []
@@ -118,6 +113,14 @@ if __name__ == '__main__':
             peptide_unif.append(S.peptide_remain[k])
             x_unif.append(x_tracker[k])
             y_unif.append(y_tracker[k])
+        if(plot!=-1):
+            if(plot==1 or plot==3 or plot==5):
+                S.PlotPath(x_tracker,y_tracker)
+            if(plot==2 or plot==3):
+                S.particle.PlotParticle()
+            if(plot==4 or plot == 5):
+                S.PlotPathRange(timescale,x_unif,y_unif)
+            plt.show()
 
         if analytic != -1:
             a = [1,0]

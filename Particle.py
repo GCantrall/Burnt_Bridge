@@ -71,8 +71,6 @@ class Particle:
 
         v1 = np.dot(e.T,np.array([xo_p,yo_p,zo_p]))
         v2 = np.dot(e.T,np.array([xn_p,yn_p,zn_p]))
-        plt.plot([0,v1[0]], [0,v1[1]])
-        plt.plot([0,v2[0]], [0,v2[1]])
         v = (v1[0] * v2[0] + v1[1] * v2[1]) / (math.sqrt(math.pow(v1[0], 2) + math.pow(v1[1], 2)) * math.sqrt(math.pow(v2[0], 2) + math.pow(v2[1], 2)))
         if v<-1:
             v=-1
