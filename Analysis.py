@@ -111,7 +111,16 @@ def PlotRunningRMSD(Data):
 def PlotAngleFrequency(Data):
     fig, ax1 = plt.subplots()
     ax1.plot(np.arange(len(Data.angles) - 1) / (10) - np.pi, Data.angles[1:] / sum(Data.angles[1:]))
+    ax1.set_ylabel("Probability Distribution")
+    ax1.set_xlabel("Angle")
 
+def PlotMultipleAngleFrequency(Datas):
+    fig, ax1 = plt.subplots()
+    for Data in Datas:
+        ax1.plot(np.arange(len(Data.angles) - 1) / (10) - np.pi, Data.angles[1:] / sum(Data.angles[1:]),label = Data.name)
+    ax1.set_ylabel("Probability Distribution")
+    ax1.legend()
+    ax1.set_xlabel("Angle")
 def plotTestFunction():
     fig, ax = plt.subplots(figsize=(6, 6))
 
@@ -155,18 +164,19 @@ Normal1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax
 Normal2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Normal", name="Half Insertion Rate")
 Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Normal", name="Douple Move Distance")
 """
-#Data = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsive", name="Repulsive")
+#Data = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion_2", name="Repulsive")
 #Data1 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")
 #Data2 = LoadGroup(idMin=1,idMax=20,replicates= 1000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked", name="Unblocked2")
-#Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Augmented", name="Blocked")
-#unblocked  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Unblocked", name="Unblocked")
+Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffusion_Only", name="Diffusion")
+unblocked  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")
 #directional  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Directional")
-Data = DataSet(replicates=500,s_length=10000,version=2)
-Data.LoadData()
+#Data = DataSet(replicates=500,s_length=10000,version=2)
+#Data.LoadData()
 #PlotMultipleLogMSD([Data,Data1])
 #PlotKuhn(Data)
 #PlotAngleFrequency(Data2)
-PlotAngleFrequency(Data)
+PlotMultipleAngleFrequency([Data1,unblocked])
+#PlotAngleFrequency(Data)
 #PlotAngleFrequency(Distince1)
 #DataSet(tp=500,lp=100, tb=1000,id=1,version=2,path="DataFolder")
 
