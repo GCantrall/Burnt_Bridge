@@ -10,7 +10,7 @@ import os.path
 
 
 """Loads a group of Dataset objects and averages the values"""
-def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 16, replicates=1000, s_length=1000000, lp=20, tp=100, tb=4000, path = "", name=""):
+def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 1, replicates=1000, s_length=1000000, lp=20, tp=100, tb=4000, path = "", name=""):
     Data1 = DataSet(replicates=replicates,s_length=s_length,lp=lp,tp=tp,tb=tb,path=path, id=idMin, version=versionMin, name= name)
     Data1.LoadData()
     for id in range(idMin,idMax+1):
@@ -78,9 +78,7 @@ def PlotMultipleLogMSD(DataList):
     ax1.legend()
     ax2.legend()
     ax2.set_ylim(0, pepMax)
-    #ax1.set_xlim(DataList[0].timescale[-1])
-    #ax1.set_ylim(bottom=100)
-    #ax2.set_xlim(100, DataList[0].timescale[-1])
+
 
 """Plots Total means squared distance vs time"""
 def PlotTotalMSD(Data):
@@ -117,6 +115,7 @@ def PlotMultipleAngleFrequency(Datas):
     fig, ax1 = plt.subplots()
     for Data in Datas:
         ax1.plot(np.arange(len(Data.angles[1:-1])) / (10) - np.pi, Data.angles[1:-1] / sum(Data.angles[1:-1]), label = Data.name)
+    ax1.legend()
 
 def plotTestFunction():
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -162,22 +161,32 @@ Normal2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax
 Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Normal", name="Douple Move Distance")
 """
 
-#Data = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsive", name="Repulsive")
+#Data = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=1000, s_length=1000000,tp=500,lp=20, tb=4000,path="Repulsive", name="Repulsive")
+#Data2 = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=1000, s_length=1000000,tp=500,lp=20, tb=4000,path="Repulsion_Full", name="Repulsive")
+
+
+
 """
 Data1 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffusion_Only", name="Pure Diffusive")
 Data2 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")
 Data3  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Blocked_Update", name="Blocked")
 """
 
-Normal  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion", name="Normal")
-Fast  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=100,lp=20, tb=4000,path="Analytics_Repulsion", name="Fast insertion ")
-#Data = DataSet(replicates=20000,s_length=10000)
+#Data3  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Blocked", name="Blocked")
 
+Blocked  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Blocked", name="Blocked")
+
+Unblocked = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Unblocked", name="Unblocked")
+Diffusion  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffusion_Only", name="Diffusion")
+#Data = DataSet(replicates=20000,s_length=10000)
+Repulsion  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion", name="Repulsion")
+#Normal2  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Unblocked", name="Normal")
+#Normal.Average(Normal2)
 #Data.LoadData()
-#PlotMultipleLogMSD([Normal,Fast])
+PlotMultipleAngleFrequency([Blocked, Unblocked, Diffusion, Repulsion])
 #PlotKuhn(Data)
-#PlotMultipleAngleFrequency([Data1,Data2,Data3])
-PlotMultipleAngleFrequency([Normal,Fast])
+#PlotMultipleAngleFrequency([Normal])
+#PlotMultipleAngleFrequency([Distince1])
 #PlotAngleFrequency(Data2)
 #PlotAngleFrequency(Data3)
 #PlotAngleFrequency(Data1)
