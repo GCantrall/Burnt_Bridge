@@ -37,7 +37,7 @@ class Simulation:
                 x.append(x_tracker[i])
                 y.append(y_tracker[i])
         ax1.set_aspect('equal')
-        ax1.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1,s=3.17)
+        ax1.scatter(self.x_peptide,self.y_peptide, c ='b',zorder=1)
         ax1.plot(x, y,c = 'r', zorder=0)
 
     def SetNeighbors(self):

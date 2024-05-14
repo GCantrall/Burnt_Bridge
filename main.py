@@ -160,8 +160,8 @@ if __name__ == '__main__':
         RMSDw = (i * RMSDw + np.array(GetRMSDW(x_unif, y_unif, RMSDw_l))) / (i + 1)
 
         peptide_remaining = (i*peptide_remaining+np.array(peptide_unif))/(i+1)
-    plt.plot(angleDistTotal[1:-1])
-    plt.show()
+    #plt.plot(angleDistTotal[1:-1])
+    #plt.show()
     filename  = "Simulation_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
     if id != -1:
         filename = filename+"_"+str(id)
