@@ -174,13 +174,13 @@ Data2 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=100
 Data3  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Blocked_Update", name="Blocked")
 """
 
-Repulsion_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsion_Long", name="Repulsion")
-Blocked_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Blocked", name="Blocked")
-Blocked_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Blocked", name="Blocked")
+#Repulsion_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsion_Long", name="Repulsion")
+#Blocked_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Blocked", name="Blocked")
+#Blocked_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Blocked", name="Blocked")
 
 
 Blocked_a  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Blocked", name="Blocked")
-
+Repulsive_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion", name="Repulsion")
 Unblocked_a = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Unblocked", name="Unblocked")
 Diffusion_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffusion_Only", name="Diffusion")
 #Data = DataSet(replicates=20000,s_length=10000)
@@ -188,7 +188,7 @@ Diffusion_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_lengt
 #Normal2  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Unblocked", name="Normal")
 #Normal.Average(Normal2)
 #Data.LoadData()
-PlotMultipleAngleFrequency([Blocked_a, Unblocked_a, Diffusion_a])
+PlotMultipleAngleFrequency([Blocked_a, Unblocked_a, Diffusion_a,Repulsive_a])
 #PlotKuhn(Data)
 #PlotMultipleAngleFrequency([Normal])
 #PlotMultipleAngleFrequency([Distince1])
@@ -199,7 +199,7 @@ PlotMultipleAngleFrequency([Blocked_a, Unblocked_a, Diffusion_a])
 
 #Data2  = DataSet(replicates=100,s_length=1000000, tp=500)
 
-PlotMultipleLogMSD([Repulsion_Long,Blocked_Long])
+#PlotMultipleLogMSD([Repulsion_Long,Blocked_Long])
 #
 
 #PlotMultipleLogMSD([Data1,Data2, Data3])
