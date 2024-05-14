@@ -181,6 +181,7 @@ Data3  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=1000
 
 Blocked_a  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Blocked", name="Blocked")
 Repulsive_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion", name="Repulsion")
+Repulsive_a  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=1000, s_length=10000, versionMax=1,tp=100,lp=20, tb=4000,path="Repulsion_Fast_Insertion", name="Repulsion Fast Insertion")
 Unblocked_a = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Unblocked", name="Unblocked")
 Diffusion_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffusion_Only", name="Diffusion")
 #Data = DataSet(replicates=20000,s_length=10000)
