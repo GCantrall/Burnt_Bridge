@@ -149,8 +149,8 @@ class Simulation:
             else:
                 degree = random.random()*2*math.pi
 
-                x2 = self.x+(self.ld+1-self.particle.peptide[current_location])*math.cos(degree)
-                y2 = self.y+(self.ld+1-self.particle.peptide[current_location])*math.sin(degree)
+                x2 = self.x+(self.ld+3*(1-self.particle.peptide[current_location]))*math.cos(degree)
+                y2 = self.y+(self.ld+3*(1-self.particle.peptide[current_location]))*math.sin(degree)
 
                 energy_n = self.CalculateEnergy(x2,y2)
 
