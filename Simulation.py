@@ -62,7 +62,7 @@ class Simulation:
             if(np.sqrt(math.pow(self.x_peptide[k]- self.x,2) + math.pow(self.y_peptide[k]- self.y,2))<(self.lp+2*self.peptide_size)):
                 self.neighbors.append(k)
 
-    def RunSimulation(self, totalTime):
+    def RunSimulationRep(self, totalTime):
         x_tracker = [0]
         y_tracker = [0]
         time  = [0]
