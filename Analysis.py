@@ -74,7 +74,8 @@ def PlotMultipleLogMSD(DataList):
             maxTime=np.max(Data.timescale)
 
     ax1.plot([0,maxTime], [0,maxTime],c='k',linestyle='--', label = "Normal Diffusion")
-    ax1.plot(np.arange(0, maxTime), np.arange(0, maxTime)*2, c='grey', linestyle='--', label = "Double Diffusion")
+    ax1.plot(np.arange(0, maxTime), np.arange(0, maxTime)*4, c='grey', linestyle='--', label = "Fast Diffusion")
+    ax1.plot(np.arange(0, maxTime), np.arange(0, maxTime) * 3.2, c='lightgrey', linestyle='--', label="Facilitated Motion")
     ax1.legend()
     ax2.legend()
     ax2.set_ylim(0, pepMax)
@@ -174,22 +175,23 @@ Data2 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=100
 Data3  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Blocked_Update", name="Blocked")
 """
 
-#Repulsion_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsion_Long", name="Repulsion")
-#Blocked_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Blocked", name="Blocked")
+Repulsion_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Repulsion_Long", name="Repulsion")
+Blocked_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Blocked", name="Blocked")
 #Blocked_Long  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=500, s_length=2000000, versionMax=1,tp=500,lp=20, tb=4000,path="Blocked", name="Blocked")
 
 
-Blocked_a  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Blocked", name="Blocked")
-Repulsive_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion", name="Repulsion")
-Repulsive_a  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=1000, s_length=10000, versionMax=1,tp=100,lp=20, tb=4000,path="Repulsion_Fast_Insertion", name="Repulsion Fast Insertion")
-Unblocked_a = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Unblocked", name="Unblocked")
-Diffusion_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffusion_Only", name="Diffusion")
+#Blocked_a  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Blocked", name="Blocked")
+#Repulsive_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion", name="Repulsion")
+#Repulsive_a_f  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=1000, s_length=10000, versionMax=2,tp=100,lp=20, tb=4000,path="Repulsion_Fast_Insertion", name="Repulsion Fast Insertion")
+
+#Unblocked_a = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Unblocked", name="Unblocked")
+#Diffusion_a  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffusion_Only", name="Diffusion")
 #Data = DataSet(replicates=20000,s_length=10000)
 #Repulsion  = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion", name="Repulsion")
 #Normal2  = LoadGroup(idMin=1,idMax=40,versionMin=1,replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytic_Unblocked", name="Normal")
 #Normal.Average(Normal2)
 #Data.LoadData()
-PlotMultipleAngleFrequency([Blocked_a, Unblocked_a, Diffusion_a,Repulsive_a])
+#PlotMultipleAngleFrequency([Unblocked_a, Diffusion_a,Repulsive_a,Repulsive_a_f])
 #PlotKuhn(Data)
 #PlotMultipleAngleFrequency([Normal])
 #PlotMultipleAngleFrequency([Distince1])
@@ -200,7 +202,7 @@ PlotMultipleAngleFrequency([Blocked_a, Unblocked_a, Diffusion_a,Repulsive_a])
 
 #Data2  = DataSet(replicates=100,s_length=1000000, tp=500)
 
-#PlotMultipleLogMSD([Repulsion_Long,Blocked_Long])
+PlotMultipleLogMSD([Repulsion_Long,Blocked_Long])
 #
 
 #PlotMultipleLogMSD([Data1,Data2, Data3])
