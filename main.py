@@ -35,6 +35,7 @@ def GetParams():
     tc = 200
     analytic = -1
     ptype = "n"
+    simulation = "b"
     for i in range(int((len(arguments)-1)/2)):
         if arguments[(2*i+1)] == "-s":
             s_length = int(arguments[2*i+2])
@@ -58,13 +59,15 @@ def GetParams():
             analytic = arguments[2*i+2]
         elif arguments[(2*i+1)]== "-tc":
             tc = arguments[2*i+2]
+        elif arguments[(2*i+1)]== "-sim":
+            simulation = arguments[2*i+2]
 
 
-    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype, analytic, tc]
+    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype, analytic, tc, simulation]
 
 
 if __name__ == '__main__':
-    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic, tc = GetParams()
+    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic, tc,simulation = GetParams()
 
     S = Simulation(tp,lp,tb,tc, ptype, analytic)
     times = []
@@ -85,12 +88,17 @@ if __name__ == '__main__':
 
 
         if analytic!=-1:
-            time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulation(s_length)
-
+            if simulation =="r":
+                time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulationRep(s_length)
+            else:
+                time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulation(s_length)
             KuhnTotal.append(Kuhn)
 
         else:
-            time, x_tracker, y_tracker = S.RunSimulation(s_length)
+            if simulation=="r":
+                time, x_tracker, y_tracker = S.RunSimulationRep(s_length)
+            else:
+                time, x_tracker, y_tracker = S.RunSimulation(s_length)
         k = 0
         peptide_unif = []
         x_unif = []
@@ -151,13 +159,14 @@ if __name__ == '__main__':
             angleDist = angleDist[:-1]
             angleDistTotal = (i * angleDistTotal + angleDist)/(i + 1)
 
+
         MSD = (i * MSD + np.array(GetMSD(x_unif, y_unif))) / (i + 1)
 
         RMSDw = (i * RMSDw + np.array(GetRMSDW(x_unif, y_unif, RMSDw_l))) / (i + 1)
 
         peptide_remaining = (i*peptide_remaining+np.array(peptide_unif))/(i+1)
 
-    filename  = "Simulation_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
+    filename  = "Simulation_"+simulation+"_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
     if id != -1:
         filename = filename+"_"+str(id)
 

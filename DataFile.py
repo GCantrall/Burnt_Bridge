@@ -7,13 +7,14 @@ import matplotlib.pyplot as plt
 import os.path
 
 class DataSet:
-    def __init__(self, replicates=1000, s_length=1000000, lp=20, tp=500, tb=4000, id=-1, version=-1, path = "",name=""):
+    def __init__(self, replicates=1000, s_length=1000000, lp=20, tp=500, tb=4000, id=-1, version=-1, sim="n", path = "",name=""):
         self.replicates = replicates
         self.s_length = s_length
         self.lp = lp
         self.tp = tp
         self.path = path
         self.tb = tb
+        self.sim = sim
         self.id = id
         self.version = version
         self.peptides = []
@@ -29,7 +30,11 @@ class DataSet:
 
 
     def LoadData(self):
-        filename = "Simulation_" + str(self.replicates) + "r_" + str(self.s_length) + "s_" + str(self.lp) + "lp_" + str(
+        filename = "Simulation_"
+        if self.sim !="n":
+            filename = filename+self.sim+"_"
+
+        filename = filename+ str(self.replicates) + "r_" + str(self.s_length) + "s_" + str(self.lp) + "lp_" + str(
             self.tp) + "tp_" + str(self.tb) + "tb"
         if (self.id != -1):
             filename = filename + "_" + str(self.id)
