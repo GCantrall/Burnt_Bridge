@@ -90,6 +90,8 @@ if __name__ == '__main__':
         if analytic!=-1:
             if simulation =="r":
                 time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulationRep(s_length)
+            elif(simulation =="a"):
+                time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulationDiffuse(s_length,plot)
             else:
                 time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulation(s_length)
             KuhnTotal.append(Kuhn)
@@ -97,12 +99,20 @@ if __name__ == '__main__':
         else:
             if simulation=="r":
                 time, x_tracker, y_tracker = S.RunSimulationRep(s_length)
+            elif(simulation =="a"):
+                if(plot ==6):
+                    time, x_tracker, y_tracker, x_peptide_tracker, y_peptide_tracker, strength_peptide_tracker = S.RunSimulationDiffuse(s_length, plot)
+                else:
+                    time, x_tracker, y_tracker= S.RunSimulationAttr(s_length, plot)
             else:
-                time, x_tracker, y_tracker = S.RunSimulation(s_length)
+                if(plot ==6):
+                    time, x_tracker, y_tracker = S.RunSimulation(s_length)
+
         k = 0
         peptide_unif = []
         x_unif = []
         y_unif = []
+
         for j in range(len(timescale)):
             while True:
                 if time[k + 1] < timescale[j]:
@@ -113,6 +123,23 @@ if __name__ == '__main__':
             peptide_unif.append(S.peptide_remain[k])
             x_unif.append(x_tracker[k])
             y_unif.append(y_tracker[k])
+
+        x_peptide_unif = []
+        y_peptide_unif = []
+        strength_peptide_unif = []
+        if plot==6:
+            k=0
+            for j in range(len(timescale)):
+                while True:
+                    if time[k + 1] < timescale[j]:
+                        k = k + 1
+                    else:
+                        break
+
+                x_peptide_unif.append(x_peptide_tracker[k][:])
+                y_peptide_unif.append(y_peptide_tracker[k].copy())
+                strength_peptide_unif.append(strength_peptide_tracker[k].copy())
+
         if(plot!=-1):
             if(plot==1 or plot==3 or plot ==5):
                 S.PlotPath(x_tracker,y_tracker)
@@ -120,6 +147,8 @@ if __name__ == '__main__':
                 S.particle.PlotParticle()
             if(plot==4 or plot == 5):
                 S.PlotPathRange(timescale,x_unif,y_unif)
+            if(plot==6):
+                S.PlotPathVideo(timescale,x_unif,y_unif,x_peptide_unif,y_peptide_unif,strength_peptide_unif)
             plt.show()
 
 

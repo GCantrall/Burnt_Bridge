@@ -8,7 +8,7 @@ class Particle:
     def __init__(self):
         self.edges = []
         self.coordinates = []
-        self.peptide = np.ones(600)
+        self.peptide = np.ones(200)
         self.current = 0
         self.previous = 1
 
@@ -149,15 +149,15 @@ class Particle:
 
     def CreateParticle(self):
 
-        self.peptide = np.ones(600)
+        self.peptide = np.ones(200)
         self.current = 0
         self.previous = 1
         self.coordinates = []
         self.coordinates.append([2*math.pi*random.random(),2*math.pi*random.random()])
         self.edges = []
         i = 0
-        maxDelta = .1
-        while i < 599:
+        maxDelta = .2
+        while i < len(self.peptide)-1:
             theta = 2*math.pi*random.random()
             phi = 2*math.pi*random.random()
             toClose = False
@@ -179,7 +179,7 @@ class Particle:
                     continue
                 c1 = self.coordinates[i]
                 c2 = self.coordinates[j]
-                if ((self.GetDistance(c1,c2 )))<.2:
+                if ((self.GetDistance(c1,c2 )))<.33:
                    edgeList.append(j)
             self.edges.append(edgeList)
 
@@ -237,7 +237,7 @@ class Particle:
         x = np.cos(u) * np.sin(v)
         y = np.sin(u) * np.sin(v)
         z = np.cos(v)
-        ax.plot_wireframe(x, y, z, edgecolor="k")
+        ax.plot_wireframe(x, y, z, edgecolor="lightgrey")
 
 
         for i in range(len(self.coordinates)):
@@ -265,3 +265,13 @@ class Particle:
 
         plt.scatter(x,y)
         plt.show()
+class Peptide:
+
+    def __init__(self,x,y):
+        self.strength = 1
+        self.x = x
+        self.y = y
+        self.radius = 5
+    def increaseStrength(self, increase):
+        self.strength+=increase
+
