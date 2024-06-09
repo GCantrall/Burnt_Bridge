@@ -10,15 +10,15 @@ import os.path
 
 
 """Loads a group of Dataset objects and averages the values"""
-def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 16, replicates=1000, s_length=1000000, lp=20, tp=100, tb=4000, path = "", name=""):
-    Data1 = DataSet(replicates=replicates,s_length=s_length,lp=lp,tp=tp,tb=tb,path=path, id=idMin, version=versionMin, name= name)
+def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 16, replicates=1000, s_length=1000000, lp=20, tp=100, tb=4000, path = "", name="", simType = ""):
+    Data1 = DataSet(replicates=replicates,s_length=s_length,lp=lp,tp=tp,tb=tb,path=path, id=idMin, version=versionMin, name= name,simType=simType)
     Data1.LoadData()
     for id in range(idMin,idMax+1):
         for version in range(versionMin,versionMax+1):
             if version==versionMin and id == idMin:
                 continue
             else:
-                Data2 = DataSet(replicates=replicates,s_length=s_length,lp=lp,tp=tp,tb=tb,path=path, id=id, version=version)
+                Data2 = DataSet(replicates=replicates,s_length=s_length,lp=lp,tp=tp,tb=tb,path=path, id=id, version=version, simType=simType)
                 Data2.LoadData()
                 Data1.Average(Data2)
     return Data1
@@ -167,8 +167,9 @@ Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax
 #Data = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion_2", name="Repulsive")
 #Data1 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")
 #Data2 = LoadGroup(idMin=1,idMax=20,replicates= 1000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked", name="Unblocked2")
-normal  = LoadGroup(idMin=1,idMax=60,versionMin=1, replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffuse_Peptide", name="Normal",)
-Fast  = LoadGroup(idMin=1,idMax=20,versionMin=2,replicates=10000, s_length=10000, versionMax=2,tp=500,lp=20, tb=4000,path="Analytics_Diffuse_Peptide", name="Fast Cutting")
+normal  = LoadGroup(idMin=1,idMax=60,versionMin=1, replicates=10000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Diffuse_Peptide", name="Normal",simType="b")
+Fast  = LoadGroup(idMin=1,idMax=60,versionMin=2,replicates=10000, s_length=10000, versionMax=2,tp=500,lp=20, tb=4000,path="Analytics_Diffuse_Peptide", name="Fast Cutting",simType="b")
+
 #directional  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Directional")
 #Data = DataSet(replicates=500,s_length=10000,version=2)
 #Data.LoadData()

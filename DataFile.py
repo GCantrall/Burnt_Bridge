@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os.path
 
 class DataSet:
-    def __init__(self, replicates=1000, s_length=1000000, lp=20, tp=500, tb=4000, id=-1, version=-1, path = "",name=""):
+    def __init__(self, replicates=1000, s_length=1000000, lp=20, tp=500, tb=4000, id=-1, version=-1, path = "",name="", simType = ""):
         self.replicates = replicates
         self.s_length = s_length
         self.lp = lp
@@ -22,6 +22,7 @@ class DataSet:
         self.timescale = []
         self.angles = []
         self.Kuhn = []
+        self.simType = simType
         if (name==""):
             self.name = path
         else:
@@ -29,7 +30,12 @@ class DataSet:
 
 
     def LoadData(self):
-        filename = "Simulation_" + str(self.replicates) + "r_" + str(self.s_length) + "s_" + str(self.lp) + "lp_" + str(
+
+        if self.simType != "":
+            type = self.simType+"_"
+        else:
+            type = ""
+        filename = "Simulation_" +type + str(self.replicates) + "r_" + str(self.s_length) + "s_" + str(self.lp) + "lp_" + str(
             self.tp) + "tp_" + str(self.tb) + "tb"
         if (self.id != -1):
             filename = filename + "_" + str(self.id)
