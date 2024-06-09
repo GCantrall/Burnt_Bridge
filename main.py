@@ -35,6 +35,7 @@ def GetParams():
     tc = 200
     analytic = -1
     ptype = "n"
+    simulation = "b"
     for i in range(int((len(arguments)-1)/2)):
         if arguments[(2*i+1)] == "-s":
             s_length = int(arguments[2*i+2])
@@ -58,13 +59,15 @@ def GetParams():
             analytic = arguments[2*i+2]
         elif arguments[(2*i+1)]== "-tc":
             tc = arguments[2*i+2]
+        elif arguments[(2*i+1)]== "-sim":
+            simulation = arguments[2*i+2]
 
 
-    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype, analytic, tc]
+    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype, analytic, tc, simulation]
 
 
 if __name__ == '__main__':
-    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic, tc = GetParams()
+    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic, tc,simulation = GetParams()
 
     S = Simulation(tp,lp,tb,tc, ptype, analytic)
     times = []
@@ -85,16 +88,31 @@ if __name__ == '__main__':
 
 
         if analytic!=-1:
-            time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulation(s_length)
-
+            if simulation =="r":
+                time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulationRep(s_length)
+            elif(simulation =="a"):
+                time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulationDiffuse(s_length,plot)
+            else:
+                time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulation(s_length)
             KuhnTotal.append(Kuhn)
 
         else:
-            time, x_tracker, y_tracker = S.RunSimulation(s_length)
+            if simulation=="r":
+                time, x_tracker, y_tracker = S.RunSimulationRep(s_length)
+            elif(simulation =="a"):
+                if(plot ==6):
+                    time, x_tracker, y_tracker, x_peptide_tracker, y_peptide_tracker, strength_peptide_tracker = S.RunSimulationDiffuse(s_length, plot)
+                else:
+                    time, x_tracker, y_tracker= S.RunSimulationAttr(s_length, plot)
+            else:
+                if(plot ==6):
+                    time, x_tracker, y_tracker = S.RunSimulation(s_length)
+
         k = 0
         peptide_unif = []
         x_unif = []
         y_unif = []
+
         for j in range(len(timescale)):
             while True:
                 if time[k + 1] < timescale[j]:
@@ -105,6 +123,23 @@ if __name__ == '__main__':
             peptide_unif.append(S.peptide_remain[k])
             x_unif.append(x_tracker[k])
             y_unif.append(y_tracker[k])
+
+        x_peptide_unif = []
+        y_peptide_unif = []
+        strength_peptide_unif = []
+        if plot==6:
+            k=0
+            for j in range(len(timescale)):
+                while True:
+                    if time[k + 1] < timescale[j]:
+                        k = k + 1
+                    else:
+                        break
+
+                x_peptide_unif.append(x_peptide_tracker[k][:])
+                y_peptide_unif.append(y_peptide_tracker[k].copy())
+                strength_peptide_unif.append(strength_peptide_tracker[k].copy())
+
         if(plot!=-1):
             if(plot==1 or plot==3 or plot ==5):
                 S.PlotPath(x_tracker,y_tracker)
@@ -112,6 +147,8 @@ if __name__ == '__main__':
                 S.particle.PlotParticle()
             if(plot==4 or plot == 5):
                 S.PlotPathRange(timescale,x_unif,y_unif)
+            if(plot==6):
+                S.PlotPathVideo(timescale,x_unif,y_unif,x_peptide_unif,y_peptide_unif,strength_peptide_unif)
             plt.show()
 
 
@@ -151,13 +188,14 @@ if __name__ == '__main__':
             angleDist = angleDist[:-1]
             angleDistTotal = (i * angleDistTotal + angleDist)/(i + 1)
 
+
         MSD = (i * MSD + np.array(GetMSD(x_unif, y_unif))) / (i + 1)
 
         RMSDw = (i * RMSDw + np.array(GetRMSDW(x_unif, y_unif, RMSDw_l))) / (i + 1)
 
         peptide_remaining = (i*peptide_remaining+np.array(peptide_unif))/(i+1)
 
-    filename  = "Simulation_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
+    filename  = "Simulation_"+simulation+"_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
     if id != -1:
         filename = filename+"_"+str(id)
 

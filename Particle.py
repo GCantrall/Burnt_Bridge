@@ -8,7 +8,7 @@ class Particle:
     def __init__(self):
         self.edges = []
         self.coordinates = []
-        self.peptide = np.ones(600)
+        self.peptide = np.ones(200)
         self.current = 0
         self.previous = 1
 
@@ -62,14 +62,27 @@ class Particle:
         yn_p = yn+kn*yc
         zn_p = zn+kn*zc
 
-        v = (xo_p * xn_p + yo_p * yn_p) / (math.sqrt(math.pow(xo_p, 2) + math.pow(yo_p, 2)) * math.sqrt(math.pow(xn_p, 2) + math.pow(yn_p, 2)))
-        if v<-1:
-            v=-1
-        elif(v>1):
-            v=1
+        e1 = np.array([xo_p-xc,yo_p-yc,zo_p-zc])
+        e1 = e1/(np.sqrt(np.dot(e1,e1)))
+        e2 = np.cross(e1,np.array([xc,yc,zc]))
 
-        degree = math.acos(v)+np.pi
-        return degree
+        e = np.c_[e1,e2]
+
+        v1 = np.dot(e.T,np.array([xo_p,yo_p,zo_p]))
+        """abcdefghijklmnop::)_))) sanm want code to work please <3"""
+        v2 = np.dot(e.T,np.array([xn_p,yn_p,zn_p]))
+        #v = (v1[0] * v2[0] + v1[1] * v2[1]) / (math.sqrt(math.pow(v1[0], 2) + math.pow(v1[1], 2)) * math.sqrt(math.pow(v2[0], 2) + math.pow(v2[1], 2)))
+        #if v<-1:
+        #    v=-1
+        #elif(v>1):
+        #    v=1
+
+        #degree = math.acos(v)
+        cross = np.cross(v1,v2)
+
+        degree = np.arccos(v1.dot(v2) / (np.sqrt(v1.dot(v1)) * np.sqrt(v2.dot(v2))))*cross/np.sqrt(cross.dot(cross))
+
+        return degree +np.pi
 
     def MaxCoords(self):
         maxx= 0
@@ -136,15 +149,15 @@ class Particle:
 
     def CreateParticle(self):
 
-        self.peptide = np.ones(600)
+        self.peptide = np.ones(200)
         self.current = 0
         self.previous = 1
         self.coordinates = []
         self.coordinates.append([2*math.pi*random.random(),2*math.pi*random.random()])
         self.edges = []
         i = 0
-        maxDelta = .1
-        while i < 599:
+        maxDelta = .2
+        while i < len(self.peptide)-1:
             theta = 2*math.pi*random.random()
             phi = 2*math.pi*random.random()
             toClose = False
@@ -166,7 +179,7 @@ class Particle:
                     continue
                 c1 = self.coordinates[i]
                 c2 = self.coordinates[j]
-                if ((self.GetDistance(c1,c2 )))<.2:
+                if ((self.GetDistance(c1,c2 )))<.33:
                    edgeList.append(j)
             self.edges.append(edgeList)
 
@@ -178,7 +191,10 @@ class Particle:
         self.previous = 1
         for i in np.arange(0,2*math.pi,.1):
             #self.coordinates.append([0,i])
-            self.coordinates.append([i, math.pi/2])
+            if int(i*10)%2==0:
+                self.coordinates.append([i, math.pi / 2 +.3])
+            else:
+                self.coordinates.append([i, math.pi / 2 -.3 ])
             edgelist = [count]
             count = count + 1
 
@@ -216,6 +232,14 @@ class Particle:
         y_u = []
         z_r = []
         z_u = []
+
+        u, v = np.mgrid[0:2 * np.pi:20j, 0:np.pi:10j]
+        x = np.cos(u) * np.sin(v)
+        y = np.sin(u) * np.sin(v)
+        z = np.cos(v)
+        ax.plot_wireframe(x, y, z, edgecolor="lightgrey")
+
+
         for i in range(len(self.coordinates)):
             coord = self.coordinates[i]
             if self.peptide[i] == 1:
@@ -241,3 +265,13 @@ class Particle:
 
         plt.scatter(x,y)
         plt.show()
+class Peptide:
+
+    def __init__(self,x,y):
+        self.strength = 1
+        self.x = x
+        self.y = y
+        self.radius = 5
+    def increaseStrength(self, increase):
+        self.strength+=increase
+
