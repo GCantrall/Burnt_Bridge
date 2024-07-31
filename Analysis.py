@@ -119,7 +119,7 @@ def PlotMultipleAngleFrequency(Datas):
     for Data in Datas:
         ax1.plot(np.arange(len(Data.angles) - 1) / (10) - np.pi, Data.angles[1:] / sum(Data.angles[1:]),label = Data.name)
     ax1.set_ylabel("Probability Distribution")
-    ax1.legend()
+    ax1.legend(title = "Strength of Directed Motion")
     ax1.set_xlabel("Angle")
 def plotTestFunction():
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -167,7 +167,16 @@ Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax
 #Data = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion_2", name="Repulsive")
 #Data1 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")
 #Data2 = LoadGroup(idMin=1,idMax=20,replicates= 1000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked", name="Unblocked2")
-normal  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Gradient_1", name="Normal",simType="a")
+#normal_2  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM", name="0.005",simType="a")
+#fast_2  = LoadGroup(idMin=1,idMax=40,versionMin=2, replicates=10000, s_length=30000, versionMax=2,tp=500,lp=20, tb=4000,path="Analytics_AttDM", name="0.0025",simType="a")
+#slow_2  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_tc_100", name="0.01",simType="a")
+
+
+normal  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kp_1", name="1",simType="a")
+slow  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kpb_5", name="0.5",simType="d")
+fast  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kpb_1", name="0.1",simType="d")
+
+
 #Fast  = LoadGroup(idMin=1,idMax=60,versionMin=2,replicates=10000, s_length=10000, versionMax=2,tp=500,lp=20, tb=4000,path="Analytics_Diffuse_Peptide", name="Fast Cutting",simType="b")
 
 #directional  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Distince", name="Directional")
@@ -176,7 +185,8 @@ normal  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30
 #PlotMultipleLogMSD([Data,Data1])
 #PlotKuhn(Data)
 #PlotAngleFrequency(Data2)
-PlotMultipleAngleFrequency([normal])
+PlotMultipleAngleFrequency([normal,slow,fast])
+#PlotMultipleAngleFrequency([fast_2,normal_2,slow_2])
 #PlotAngleFrequency(Data)
 #PlotAngleFrequency(Distince1)
 #DataSet(tp=500,lp=100, tb=1000,id=1,version=2,path="DataFolder")

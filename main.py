@@ -2,7 +2,7 @@ import numpy as np
 import random
 import math
 import sys
-from Simulation import Simulation
+from Simulation import Simulation, BurntBridge, RepulseToAttractPeptide, RepulsivePeptidesDirectedMotion
 import matplotlib.pyplot as plt
 import os.path
 
@@ -58,7 +58,7 @@ def GetParams():
         elif arguments[(2*i+1)]== "-a":
             analytic = arguments[2*i+2]
         elif arguments[(2*i+1)]== "-tc":
-            tc = arguments[2*i+2]
+            tc = int(arguments[2*i+2])
         elif arguments[(2*i+1)]== "-sim":
             simulation = arguments[2*i+2]
 
@@ -69,7 +69,16 @@ def GetParams():
 if __name__ == '__main__':
     s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic, tc,simulation = GetParams()
 
-    S = Simulation(tp,lp,tb,tc, ptype, analytic)
+
+    if simulation=="b":
+        S = BurntBridge(tp,lp,tb,tc, ptype, analytic, _plot=plot)
+    elif(simulation=="a"):
+        S = RepulseToAttractPeptide(tp,lp,tb,tc, ptype, analytic,_plot=plot)
+    elif simulation =="d":
+        S = RepulsivePeptidesDirectedMotion(tp,lp,tb,tc, ptype, analytic,_plot=plot)
+
+
+    #S = Simulation(tp,lp,tb,tc, ptype, analytic)
     times = []
 
     p = np.arange(0,1,.1)
@@ -86,12 +95,12 @@ if __name__ == '__main__':
     for i in range(replicates):
         print(i)
 
-
+        """
         if analytic!=-1:
             if simulation =="r":
                 time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulationRep(s_length)
             elif(simulation =="a"):
-                time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulationDiffuse(s_length,plot)
+                time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulationAttrDM(s_length, plot)
             else:
                 time, x_tracker, y_tracker, [Kuhn, angles] = S.RunSimulation(s_length)
             KuhnTotal.append(Kuhn)
@@ -101,12 +110,14 @@ if __name__ == '__main__':
                 time, x_tracker, y_tracker = S.RunSimulationRep(s_length)
             elif(simulation =="a"):
                 if(plot ==6):
-                    time, x_tracker, y_tracker, x_peptide_tracker, y_peptide_tracker, strength_peptide_tracker = S.RunSimulationDiffuse(s_length, plot)
+                    time, x_tracker, y_tracker, x_peptide_tracker, y_peptide_tracker, strength_peptide_tracker = S.RunSimulationAttrDM(s_length, plot)
                 else:
-                    time, x_tracker, y_tracker= S.RunSimulationAttr(s_length, plot)
+                    time, x_tracker, y_tracker= S.RunSimulationAttrDM(s_length, plot)
             else:
                 if(plot ==6):
                     time, x_tracker, y_tracker = S.RunSimulation(s_length)
+            """
+        time, x_tracker, y_tracker = S.RunSimulation(s_length)
 
         k = 0
         peptide_unif = []
@@ -136,9 +147,9 @@ if __name__ == '__main__':
                     else:
                         break
 
-                x_peptide_unif.append(x_peptide_tracker[k][:])
-                y_peptide_unif.append(y_peptide_tracker[k].copy())
-                strength_peptide_unif.append(strength_peptide_tracker[k].copy())
+                x_peptide_unif.append(S.x_peptide_tracker[k][:])
+                y_peptide_unif.append(S.y_peptide_tracker[k].copy())
+                strength_peptide_unif.append(S.strength_peptide_tracker[k].copy())
 
         if(plot!=-1):
             if(plot==1 or plot==3 or plot ==5):
@@ -148,7 +159,8 @@ if __name__ == '__main__':
             if(plot==4 or plot == 5):
                 S.PlotPathRange(timescale,x_unif,y_unif)
             if(plot==6):
-                S.PlotPathVideo(timescale,x_unif,y_unif,x_peptide_unif,y_peptide_unif,strength_peptide_unif)
+                S.PlotPathVideoBeginEnd(timescale,x_unif,y_unif,x_peptide_unif,y_peptide_unif,strength_peptide_unif)
+
             plt.show()
 
 
