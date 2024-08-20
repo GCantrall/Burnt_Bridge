@@ -24,6 +24,30 @@ def LoadGroup(idMin = 1, idMax = 2, versionMin = 1, versionMax = 16, replicates=
     return Data1
 
 
+
+"""Loads a group of Dataset objects and averages the values"""
+def LoadGroupPath(path = "", name=""):
+
+    files = os.listdir(path)
+
+    Data1 = DataSet()
+    t = 0
+    for file in files:
+        if "Simulation_" in file:
+            if t==0:
+                Data1.LoadData(path+"/"+ file)
+                Data1.name = name
+                t = 1
+            else:
+                Data2 = DataSet()
+                Data2.LoadData(path+"/"+ file)
+                Data1.Average(Data2)
+
+    return Data1
+
+
+
+
 """Plots Log of the Mean Squared Distance"""
 def PlotLogMSD(Data):
     fig, ax1 = plt.subplots()
@@ -64,8 +88,8 @@ def PlotMultipleLogMSD(DataList):
     countp =.5+diff
     maxTime = 0
     for Data in DataList:
-        ax1.plot((Data.timescale), (Data.MSD), label = Data.name)
-        ax2.plot((Data.timescale), Data.peptides, label = Data.name)
+        ax1.plot((Data.timescale[10:]), (Data.MSD[10:]), label = Data.name)
+        ax2.plot((Data.timescale[10:]), Data.peptides[10:], label = Data.name)
         count = count+diff
         countp = countp+diff
         if pepMax < np.max(Data.peptides):
@@ -73,11 +97,12 @@ def PlotMultipleLogMSD(DataList):
         if(maxTime<np.max(Data.timescale)):
             maxTime=np.max(Data.timescale)
 
-    ax1.plot([0,maxTime], [0,maxTime],c='k',linestyle='--', label = "Normal Diffusion")
-    ax1.plot(np.arange(0, maxTime), np.arange(0, maxTime)*4.8, c='grey', linestyle='--', label = "Rolling Diffusion")
+    ax1.plot([1,maxTime], [1,maxTime],c='k',linestyle='--', label = "Normal Diffusion")
+    #ax1.plot(np.arange(0, maxTime), np.arange(0, maxTime)*4.8, c='grey', linestyle='--', label = "Rolling Diffusion")
     ax1.legend()
     ax2.legend()
     ax2.set_ylim(0, pepMax)
+    #ax1.legend(title="Rate of Clevage")
     #ax1.set_xlim(DataList[0].timescale[-1])
     #ax1.set_ylim(bottom=100)
     #ax2.set_xlim(100, DataList[0].timescale[-1])
@@ -95,6 +120,19 @@ def PlotTotalMSD(Data):
     ax2_b.set_ylabel("Peptides Remaining")
     ax1_b.set_xlabel("Time")
     ax1_b.set_ylabel("Mean Squared Distance")
+
+def moving_average(a, n=3):
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
+
+def PlotDM(DataSets):
+    fig, ax1 = plt.subplots()
+    n = 2
+    for Data in DataSets:
+        ax1.plot((Data.timescale[10+n:]), (moving_average(Data.DM[11:],n)), label = Data.name)
+    ax1.set_xscale('log', base=10)
+    ax1.legend()
 
 
 def PlotRunningRMSD(Data):
@@ -148,11 +186,42 @@ def PlotKuhn(Data):
 #plotTestFunction()
 #plt.show()
 
-#Data1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=20, tb=4000,path="Augmented", name="Normal")
-#Data2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Augmented", name="Half Insertion Rate")
-#Data3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=5000000, versionMax=1,tp=500,lp=40, tb=4000,path="Augmented", name="Douple Move Distance")
+#Data1  = DataSet( replicates=1000, s_length=1000,version=2, tp=500,lp=20, tb=4000,path="",simType="d", name="No Peptides Cluster")
+#Data1.LoadData()
+#Data2  = DataSet( replicates=1000, s_length=1000, tp=500,lp=20, tb=4000,path="",simType="d", name="Diffusion Only")
+#Data2.LoadData()
+#Data3  = DataSet( replicates=1000, s_length=1000, version = 3,  tp=500,lp=20, tb=4000,path="",simType="d", name="No Directed Motion")
+#Data3.LoadData()
+#Data4  = DataSet( replicates=200, s_length=1000, tp=500,lp=20, tb=4000,path="",simType="d", name="Fast Peptide Diffusion")
+#Data4.LoadData()
+#Data5  = DataSet( replicates=201, s_length=1000, tp=500,lp=20, tb=4000,path="",simType="d", name="No Directed Motion")
+#Data5.LoadData()
+#Data4.Average(Data5)
 
 
+#Data2 = LoadGroupPath("AttDiff_z",name="CR 0.005")
+#Data1 = LoadGroupPath("AttDiff_tc_100", name = "CR 0.01")
+#Data3 = LoadGroupPath("AttDiff_tc_400", name = "CR 0.0025")
+
+Data4 = LoadGroupPath("AttDM_NoDM", name = "No DM")
+Data5 = LoadGroupPath("AttDM_NoPeptide", name = "No Peptide Attraction")
+
+Data6 = LoadGroupPath("AttDM_Diff", name = "Diff")
+"""
+Data2 = LoadGroupPath("Analytics_AttDiff_tc_200",name="CR 0.005")
+Data1 = LoadGroupPath("Analytics_AttDiff_tc_100", name = "CR 0.01")
+Data3 = LoadGroupPath("Analytics_AttDiff_tc_400", name = "CR 0.0025")
+"""
+
+
+#Data1  = LoadGroup(idMin=1,idMax=50,versionMin=1, replicates=50, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDiff_z", name= "Run1",simType="d")
+#Normal  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_200", name="Normal", simType="d")
+#Data3  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_400", name="0.0025", simType="d")
+
+
+PlotMultipleLogMSD([Data4, Data5, Data6])
+#PlotDM([Data1,Data2,Data3])
+#PlotMultipleAngleFrequency([Data1,Data2,Data3])
 
 #Distince1  = LoadGroup(replicates=10000, idMin=1,idMax=20,versionMin=1, s_length=10000, versionMax=3,tp=500,lp=20, tb=4000,path="Analytics_Directional_Updated_Angle", name="Normal")
 #Distince2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Distince", name="Half Insertion Rate")
@@ -172,9 +241,9 @@ Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax
 #slow_2  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_tc_100", name="0.01",simType="a")
 
 
-normal  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kp_1", name="1",simType="a")
-slow  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kpb_5", name="0.5",simType="d")
-fast  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kpb_1", name="0.1",simType="d")
+#normal  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kp_1", name="1",simType="a")
+#slow  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kpb_5", name="0.5",simType="d")
+#fast  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=30000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_AttDM_kpb_1", name="0.1",simType="d")
 
 
 #Fast  = LoadGroup(idMin=1,idMax=60,versionMin=2,replicates=10000, s_length=10000, versionMax=2,tp=500,lp=20, tb=4000,path="Analytics_Diffuse_Peptide", name="Fast Cutting",simType="b")
@@ -185,7 +254,7 @@ fast  = LoadGroup(idMin=1,idMax=40,versionMin=1, replicates=10000, s_length=3000
 #PlotMultipleLogMSD([Data,Data1])
 #PlotKuhn(Data)
 #PlotAngleFrequency(Data2)
-PlotMultipleAngleFrequency([normal,slow,fast])
+#PlotMultipleAngleFrequency([normal,slow,fast])
 #PlotMultipleAngleFrequency([fast_2,normal_2,slow_2])
 #PlotAngleFrequency(Data)
 #PlotAngleFrequency(Distince1)

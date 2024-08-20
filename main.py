@@ -2,7 +2,7 @@ import numpy as np
 import random
 import math
 import sys
-from Simulation import Simulation, BurntBridge, RepulseToAttractPeptide, RepulsivePeptidesDirectedMotion
+from Simulation import Simulation, BurntBridge, RepulseToAttractPeptide, AttractivePeptidesDirectedMotion
 import matplotlib.pyplot as plt
 import os.path
 
@@ -34,6 +34,7 @@ def GetParams():
     plot = -1
     tc = 200
     analytic = -1
+
     ptype = "n"
     simulation = "b"
     for i in range(int((len(arguments)-1)/2)):
@@ -75,7 +76,7 @@ if __name__ == '__main__':
     elif(simulation=="a"):
         S = RepulseToAttractPeptide(tp,lp,tb,tc, ptype, analytic,_plot=plot)
     elif simulation =="d":
-        S = RepulsivePeptidesDirectedMotion(tp,lp,tb,tc, ptype, analytic,_plot=plot)
+        S = AttractivePeptidesDirectedMotion(tp, lp, tb, tc, ptype, analytic, _plot=plot)
 
 
     #S = Simulation(tp,lp,tb,tc, ptype, analytic)
@@ -89,6 +90,7 @@ if __name__ == '__main__':
     y = np.zeros(len(timescale))
     RMSDw = np.zeros(len(timescale)- RMSDw_l)
     MSD = np.zeros(len(timescale))
+    DM = np.zeros(len(timescale))
     KuhnTotal = []
 
     angleDistTotal = np.zeros(round(2*np.pi*10))
@@ -123,7 +125,7 @@ if __name__ == '__main__':
         peptide_unif = []
         x_unif = []
         y_unif = []
-
+        DM_unif = []
         for j in range(len(timescale)):
             while True:
                 if time[k + 1] < timescale[j]:
@@ -134,10 +136,12 @@ if __name__ == '__main__':
             peptide_unif.append(S.peptide_remain[k])
             x_unif.append(x_tracker[k])
             y_unif.append(y_tracker[k])
+            DM_unif.append(S.DM_tracker[k])
 
         x_peptide_unif = []
         y_peptide_unif = []
         strength_peptide_unif = []
+
         if plot==6:
             k=0
             for j in range(len(timescale)):
@@ -207,6 +211,8 @@ if __name__ == '__main__':
 
         peptide_remaining = (i*peptide_remaining+np.array(peptide_unif))/(i+1)
 
+        DM = (i * DM + np.array(DM_unif)) / (i + 1)
+
     filename  = "Simulation_"+simulation+"_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
     if id != -1:
         filename = filename+"_"+str(id)
@@ -226,7 +232,7 @@ if __name__ == '__main__':
     if analytic!=-1:
         np.savez(filename, peptides = peptide_remaining, MSD =MSD, RMSDw = RMSDw, timescale = timescale, ptype=ptype, angle = angleDistTotal, Kuhn = KuhnTotal)
     else:
-        np.savez(filename, peptides=peptide_remaining, MSD=MSD, RMSDw=RMSDw, timescale=timescale, ptype=ptype)
+        np.savez(filename, peptides=peptide_remaining, MSD=MSD, RMSDw=RMSDw, timescale=timescale, ptype=ptype,DM=DM)
 
 
 

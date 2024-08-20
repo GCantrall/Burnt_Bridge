@@ -92,7 +92,7 @@ class Simulation:
         k = 1
         for i in range(len(time[-30000:])):
             j = i-30000
-            if time[j]%25 ==0:
+            if time[j]%2 ==0:
                 x.append(x_tracker[j])
                 y.append(y_tracker[j])
                 fig, ax1 = plt.subplots()
@@ -125,25 +125,29 @@ class Simulation:
                 y_ini.append(y_tracker[i])
                 x_ini.append([x_tracker[i]])
 
-        fig, ax1 = plt.subplots()
-        ax1.set_xlim(min([min(x_tracker[-30000:])-x_tracker[-30000],min(x_tracker[:30000])]), max([max(x_tracker[-30000:])-x_tracker[-30000],max(x_tracker[:30000])]))
-        ax1.set_ylim(min([min(y_tracker[-30000:])-y_tracker[-30000],min(y_tracker[:30000])]), max([max(y_tracker[-30000:])-y_tracker[-30000],max(y_tracker[:30000])]))
-        ax1.set_aspect('equal')
+                fig, ax1 = plt.subplots()
+                ax1.set_xlim(min([min(x_tracker[-30000:])-x_tracker[-30000],min(x_tracker[:30000])]), max([max(x_tracker[-30000:])-x_tracker[-30000],max(x_tracker[:30000])]))
+                ax1.set_ylim(min([min(y_tracker[-30000:])-y_tracker[-30000],min(y_tracker[:30000])]), max([max(y_tracker[-30000:])-y_tracker[-30000],max(y_tracker[:30000])]))
+                ax1.set_aspect('equal')
 
-        #cax  = ax1.scatter(np.array(x_peptide_unif[j])-x_tracker[-30000], np.array(y_peptide_unif[j])-y_tracker[-30000], c=strength_peptide_unif[j], zorder=1, vmin=1, vmax=10,edgecolors="darkblue",cmap ="viridis")
-        #cax_2  = ax1.scatter(x_peptide_unif[i], y_peptide_unif[i], c=strength_peptide_unif[i], zorder=1, vmin=1, vmax=10,edgecolors="red",cmap="viridis")
+                #cax  = ax1.scatter(np.array(x_peptide_unif[j])-x_tracker[-30000], np.array(y_peptide_unif[j])-y_tracker[-30000], c=strength_peptide_unif[j], zorder=1, vmin=1, vmax=10,edgecolors="darkblue",cmap ="viridis", s = 2*np.array(strength_peptide_unif[j])+5)
+                #cax_2  = ax1.scatter(x_peptide_unif[i], y_peptide_unif[i], c=strength_peptide_unif[i], zorder=1, vmin=1, vmax=10,edgecolors="red",cmap="viridis", s = 2*np.array(strength_peptide_unif[i])+5)
 
-        ax1.plot(x_ini, y_ini, c='orange', zorder=0)
-        ax1.plot(x_end, y_end, c='blue', zorder=0)
-        #ax1.scatter(x_ini[-1],y_ini[-1], s=8,c="orange",edgecolors="black")
-        #ax1.scatter(x_end[-1],y_end[-1], s=8, c="blue",edgecolors="black")
+                cax  = ax1.scatter(np.array(x_peptide_unif[j])-x_tracker[-30000], np.array(y_peptide_unif[j])-y_tracker[-30000], zorder=1, c="darkblue", s = 3*np.array(strength_peptide_unif[j]))
+                cax_2  = ax1.scatter(x_peptide_unif[i], y_peptide_unif[i], zorder=1, c="red", s = 3*np.array(strength_peptide_unif[i]))
 
 
-        #cbar = fig.colorbar(cax, ticks= range(1, 10))
-        #cbar.ax.set_yticklabels(range(1, 10))
-        plt.savefig(folder + "/%03d.png" % k)
-        k +=1
-        plt.close(fig)
+                ax1.plot(x_ini, y_ini, c='orange', zorder=0)
+                ax1.plot(x_end, y_end, c='blue', zorder=0)
+                ax1.scatter(x_ini[-1],y_ini[-1], s=30,c="orange",edgecolors="black",zorder=3)
+                ax1.scatter(x_end[-1],y_end[-1], s=30, c="blue",edgecolors="black", zorder=3)
+
+
+                #cbar = fig.colorbar(cax, ticks= range(1, 10))
+                #cbar.ax.set_yticklabels(range(1, 10))
+                plt.savefig(folder + "/%03d.png" % k)
+                k +=1
+                plt.close(fig)
 
 
     # Set Neighbors of Peptides
@@ -398,13 +402,13 @@ class RepulseToAttractPeptide(Simulation):
         #else:
         return time, x_tracker, y_tracker
 
-class RepulsivePeptidesDirectedMotion(Simulation):
+class AttractivePeptidesDirectedMotion(Simulation):
 
     def DiffusePeptide(self):
         for i in range(len(self.x_peptide)):
             degree = random.random() * 2 * math.pi
-            self.x_peptide[i] = self.x_peptide[i] + 10 * math.cos(degree)/self.strength_peptide[i]
-            self.y_peptide[i] = self.y_peptide[i] + 10 * math.sin(degree)/self.strength_peptide[i]
+            self.x_peptide[i] = self.x_peptide[i] + np.sqrt(self.pepDiff) * math.cos(degree)/self.strength_peptide[i]
+            self.y_peptide[i] = self.y_peptide[i] + np.sqrt(self.pepDiff) * math.sin(degree)/self.strength_peptide[i]
 
     def RunSimulation(self, totalTime):
             x_tracker = [0]
@@ -415,15 +419,18 @@ class RepulsivePeptidesDirectedMotion(Simulation):
             time  = [0]
             self.x = 0
             self.y = 0
+            self.pepDiff = 1
             self.x_peptide = []
             self.y_peptide = []
             self.strength_peptide = []
             self.time_peptide = []
             self.neighbors = []
-            self.kbd = 1
+            self.kbd = 2
+            self.DM_tracker = []
             numDiff = 0
             numRoll = 0
             angle = []
+            num_diffuse = 0
 
 
             if(self.pType=="c"):
@@ -433,18 +440,13 @@ class RepulsivePeptidesDirectedMotion(Simulation):
             self.peptide_remain = [np.sum(self.particle.peptide)]
             current_location = 0
             vector = [1.,0.]
-            DM = -1
+            DM =  random.random()*2*math.pi
 
-            roll_tracker = np.zeros(7)
             while (time[-1]<totalTime):
-                if(len(time)%100==0):
-                    self.DiffusePeptide()
-                    self.CheckPeptides()
-                elif(len(time)%30==0):
-                    self.SetNeighbors()
-
                 withPeptide = []
                 withoutPeptide = []
+                if len(time)%30==0:
+                    self.SetNeighbors()
 
                 options  = self.particle.GetEdges(current_location)
                 for option in options:
@@ -452,15 +454,14 @@ class RepulsivePeptidesDirectedMotion(Simulation):
                         withPeptide.append(option)
                     else:
                         withoutPeptide.append(option)
-                deltaT =  -math.log(random.random())/(len(withPeptide)/self.tp+1/self.td+len(withoutPeptide)/self.tb)
+                deltaT =  -math.log(random.random())/(len(withPeptide)/self.tp+1/self.td+len(withoutPeptide)/self.tb+1/self.pepDiff)
                 time.append(time[-1] + deltaT)
-                #for i in range(len(self.time_peptide)):
-                #    self.time_peptide[i] +=deltaT
                 rand = random.random()
                 totalChance = (len(withPeptide) / (self.tp) +
                                1 / self.td +
                                len(withoutPeptide) / (self.tb)+
-                               self.particle.peptide[current_location]/self.tc)
+                               self.particle.peptide[current_location]/self.tc+
+                               1/self.pepDiff)
                 # Cleave Peptide
                 if(rand<(self.particle.peptide[current_location]/self.tc)/totalChance):
 
@@ -485,11 +486,10 @@ class RepulsivePeptidesDirectedMotion(Simulation):
                             chosen = i
                             break
                     degree, peptide = self.particle.MoveParticle(withPeptide[chosen])
-                    x2 = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
-                    y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
-                    if DM== -1:
-                        DM =  random.random()*2*math.pi
-                    vector = [x2,y2]
+                    #x2 = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
+                    #y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
+                    DM =  random.random()*2*math.pi
+                    #vector = [x2,y2]
                     current_location = withPeptide[chosen]
 
                 # Rotate To Other site
@@ -501,20 +501,14 @@ class RepulsivePeptidesDirectedMotion(Simulation):
                             chosen = i
                             break
                     degree, peptide = self.particle.MoveParticle(withoutPeptide[chosen])
-                    x2 = math.cos(degree)*vector[0]-math.sin(degree)*vector[1]
-                    y2 = math.sin(degree)*vector[0]+math.cos(degree)*vector[1]
-                    vector = [x2,y2]
                     DM = -1
                     current_location = withoutPeptide[chosen]
                 # Diffuse
-                else:
+                elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb) +self.particle.peptide[current_location]/self.tc + 1/self.td)/(totalChance)):
                     degree = random.random()*2*math.pi
 
 
-                    roll_tracker[math.floor(degree)] +=1
-                    #print(degree)
-
-
+                    #DM = 1
                     diff = np.abs(degree-DM)
                     if(diff> math.pi):
                         diff = math.pi*2 - diff
@@ -523,6 +517,7 @@ class RepulsivePeptidesDirectedMotion(Simulation):
 
                     if DM ==-1:
                         diff = 0
+                    #diff = 0
                     #if diff!= 0:
                     #    print("hi")
                     #if random.random()>np.exp(-self.kbd*diff):
@@ -538,13 +533,22 @@ class RepulsivePeptidesDirectedMotion(Simulation):
 
 
                     if (energy_n-self.energy<=0 or random.random()<np.exp(-self.kb*(energy_n-self.energy)) ) and random.random()<np.exp(-self.kbd*diff):
+                        num_diffuse += 1
                         self.energy= energy_n
                         self.x = x2
                         self.y = y2
                         numDiff = numDiff+1
+                else:
+                    self.DiffusePeptide()
+                    self.CheckPeptides()
 
                 x_tracker.append(self.x)
                 y_tracker.append(self.y)
+                if DM ==-1:
+                    self.DM_tracker.append(0)
+                else:
+                    self.DM_tracker.append(1)
+                #DM_tracker.append(DM)
                 if self.plot==6:
                     self.y_peptide_tracker.append(self.y_peptide.copy())
                     self.x_peptide_tracker.append(self.x_peptide.copy())
@@ -556,6 +560,7 @@ class RepulsivePeptidesDirectedMotion(Simulation):
             #    Kuhn = (np.power(self.x,2)+np.power(self.y,2))/lContour
 
             #    return time, x_tracker, y_tracker, [Kuhn, angle]
+            #print(time[-1]/num_diffuse)
 
             return time, x_tracker, y_tracker
 
@@ -567,11 +572,10 @@ class RepulsivePeptidesDirectedMotion(Simulation):
         for k in self.neighbors:
             dist = np.sqrt(math.pow(self.x_peptide[k] - x2, 2) + math.pow(self.y_peptide[k] - y2, 2))
             energydiff = 0
+            if dist==0:
+                dist =.1
             if (dist < self.peptide_size):
-                if dist<.1:
-                    energydiff = 10
-                else:
-                    energydiff = 1/dist
+                 energydiff =6.75*self.kb*(pow(2/dist,9)- pow(2/dist,6)) - 6.75*self.kb*(pow(2/self.peptide_size,9)- pow(2/self.peptide_size,6))
 
             """
             if self.strength_peptide[k]>3:
@@ -581,7 +585,7 @@ class RepulsivePeptidesDirectedMotion(Simulation):
             energydiff = energydiff*((self.strength_peptide[k]/10)*9+1)
             #energy +=0
             #energy += energydiff*(5-self.strength_peptide[k])/
-            energy -= energydiff
+            energy += energydiff
         return energy
 
 

@@ -16,6 +16,7 @@ class DataSet:
         self.tb = tb
         self.id = id
         self.version = version
+        self.DM = []
         self.peptides = []
         self.MSD = []
         self.RMSDw = []
@@ -29,21 +30,24 @@ class DataSet:
             self.name = name
 
 
-    def LoadData(self):
+    def LoadData(self, fileIn = ""):
 
         if self.simType != "":
             type = self.simType+"_"
         else:
             type = ""
-        filename = "Simulation_" +type + str(self.replicates) + "r_" + str(self.s_length) + "s_" + str(self.lp) + "lp_" + str(
-            self.tp) + "tp_" + str(self.tb) + "tb"
-        if (self.id != -1):
-            filename = filename + "_" + str(self.id)
-        if self.version != -1 and self.version!=1:
-            filename = filename + "(" + str(self.version) + ")"
-        filename = filename + ".npz"
-        if(self.path!=""):
-            filename = self.path+"/"+ filename
+        if fileIn =="":
+            filename = "Simulation_" +type + str(self.replicates) + "r_" + str(self.s_length) + "s_" + str(self.lp) + "lp_" + str(
+                self.tp) + "tp_" + str(self.tb) + "tb"
+            if (self.id != -1):
+                filename = filename + "_" + str(self.id)
+            if self.version != -1 and self.version!=1:
+                filename = filename + "(" + str(self.version) + ")"
+            filename = filename + ".npz"
+            if(self.path!=""):
+                filename = self.path+"/"+ filename
+        else:
+            filename = fileIn
         print(filename)
         file = np.load(filename, allow_pickle=True)
         self.peptides = file['peptides']
@@ -54,6 +58,8 @@ class DataSet:
             self.angles = file['angle']
         if 'Kuhn' in file.keys():
             self.Kuhn  = file['Kuhn']
+        if 'DM' in file.keys():
+            self.DM = file['DM']
 
 
     def Average(self, DataSet2):
@@ -62,5 +68,9 @@ class DataSet:
         self.replicates = self.replicates +DataSet2.replicates
         for Ku in DataSet2.Kuhn:
             np.append(self.Kuhn,Ku)
+        #if len(self.DM)>1:
+        #    self.DM = (self.DM * self.replicates + DataSet2.DM * DataSet2.replicates) / (
+        #                self.replicates + DataSet2.replicates)
         if(len(self.angles)>1 and len(DataSet2.angles)>1):
             self.angles = (self.angles * self.replicates + DataSet2.angles * DataSet2.replicates) / (self.replicates + DataSet2.replicates)
+

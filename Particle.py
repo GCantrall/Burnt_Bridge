@@ -17,9 +17,10 @@ class Particle:
 
     def MoveParticle(self, new):
 
-        degree = self.GetDirection(new)
+        #degree = self.GetDirection(new)
+        degree = 0
         peptide = self.peptide[new]
-        self.peptide[self.current] = 0
+        #self.peptide[self.current] = 0
         self.previous = self.current
         self.current = new
 
