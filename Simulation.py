@@ -405,10 +405,31 @@ class RepulseToAttractPeptide(Simulation):
 class AttractivePeptidesDirectedMotion(Simulation):
 
     def DiffusePeptide(self):
-        for i in range(len(self.x_peptide)):
-            degree = random.random() * 2 * math.pi
-            self.x_peptide[i] = self.x_peptide[i] + np.sqrt(self.pepDiff) * math.cos(degree)/self.strength_peptide[i]
-            self.y_peptide[i] = self.y_peptide[i] + np.sqrt(self.pepDiff) * math.sin(degree)/self.strength_peptide[i]
+
+
+        i = math.floor(random.random()*len(self.x_peptide))
+        degree = random.random() * 2 * math.pi
+        self.x_peptide[i] = self.x_peptide[i] + np.sqrt(self.pepDiff) * math.cos(degree)/self.strength_peptide[i]
+        self.y_peptide[i] = self.y_peptide[i] + np.sqrt(self.pepDiff) * math.sin(degree)/self.strength_peptide[i]
+
+
+        for j in range(len(self.x_peptide)):
+            if j>= len(self.x_peptide):
+                break
+            if (i==j):
+                continue
+            if (self.CalculatePeptideDistance(i, j) < np.sqrt(self.time_peptide[i] + self.time_peptide[j])) and \
+                    self.strength_peptide[i] + self.strength_peptide[j] < 11:
+                self.x_peptide[i] = round((self.x_peptide[i] + self.x_peptide[j]) / 2)
+                self.y_peptide[i] = round((self.y_peptide[i] + self.y_peptide[j]) / 2)
+                self.strength_peptide[i] = self.strength_peptide[i] + self.strength_peptide[j]
+                self.time_peptide[i] = 1
+                del self.x_peptide[j]
+                del self.y_peptide[j]
+                del self.strength_peptide[j]
+                del self.time_peptide[j]
+
+
 
     def RunSimulation(self, totalTime):
             x_tracker = [0]
@@ -431,7 +452,8 @@ class AttractivePeptidesDirectedMotion(Simulation):
             numRoll = 0
             angle = []
             num_diffuse = 0
-
+            time_count = 0
+            current_time = 0
 
             if(self.pType=="c"):
                 self.particle.CreateFake()
@@ -441,10 +463,14 @@ class AttractivePeptidesDirectedMotion(Simulation):
             current_location = 0
             vector = [1.,0.]
             DM =  random.random()*2*math.pi
-
+            z = 0
             while (time[-1]<totalTime):
+
+                # Empties lists
                 withPeptide = []
                 withoutPeptide = []
+
+                # Sets Neighboring peptides -- Needs update
                 if len(time)%30==0:
                     self.SetNeighbors()
 
@@ -454,14 +480,28 @@ class AttractivePeptidesDirectedMotion(Simulation):
                         withPeptide.append(option)
                     else:
                         withoutPeptide.append(option)
-                deltaT =  -math.log(random.random())/(len(withPeptide)/self.tp+1/self.td+len(withoutPeptide)/self.tb+1/self.pepDiff)
-                time.append(time[-1] + deltaT)
+                deltaT =  -math.log(random.random())/(len(withPeptide)/self.tp+1/self.td+len(withoutPeptide)/self.tb+len(self.x_peptide)/self.pepDiff)
+                current_time = current_time+deltaT
+
+
+                if (z<math.floor(current_time/totalTime*50)):
+
+                    string_p = "["
+                    for i in range(z):
+                        string_p = string_p+"="
+                    for i in range(50-z):
+                        string_p = string_p+" "
+                    string_p = string_p+"]"
+                    print(string_p)
+                    z = z+1
+
+
                 rand = random.random()
                 totalChance = (len(withPeptide) / (self.tp) +
                                1 / self.td +
                                len(withoutPeptide) / (self.tb)+
                                self.particle.peptide[current_location]/self.tc+
-                               1/self.pepDiff)
+                               len(self.x_peptide)/self.pepDiff)
                 # Cleave Peptide
                 if(rand<(self.particle.peptide[current_location]/self.tc)/totalChance):
 
@@ -508,11 +548,13 @@ class AttractivePeptidesDirectedMotion(Simulation):
                     degree = random.random()*2*math.pi
 
 
-                    #DM = 1
+                    DM = 1
                     diff = np.abs(degree-DM)
                     if(diff> math.pi):
                         diff = math.pi*2 - diff
                     diff = diff/math.pi
+
+
 
 
                     if DM ==-1:
@@ -540,27 +582,28 @@ class AttractivePeptidesDirectedMotion(Simulation):
                         numDiff = numDiff+1
                 else:
                     self.DiffusePeptide()
-                    self.CheckPeptides()
 
-                x_tracker.append(self.x)
-                y_tracker.append(self.y)
-                if DM ==-1:
-                    self.DM_tracker.append(0)
-                else:
-                    self.DM_tracker.append(1)
-                #DM_tracker.append(DM)
-                if self.plot==6:
-                    self.y_peptide_tracker.append(self.y_peptide.copy())
-                    self.x_peptide_tracker.append(self.x_peptide.copy())
-                    self.strength_peptide_tracker.append(self.strength_peptide.copy())
-                self.peptide_remain.append(np.sum(self.particle.peptide))
+                if current_time>time_count*5:
+                    x_tracker.append(self.x)
+                    y_tracker.append(self.y)
+                    time.append(time[-1] + deltaT)
+                    if DM ==-1:
+                        self.DM_tracker.append(0)
+                    else:
+                        self.DM_tracker.append(1)
+                    #DM_tracker.append(DM)
+                    if self.plot==6:
+                        self.y_peptide_tracker.append(self.y_peptide.copy())
+                        self.x_peptide_tracker.append(self.x_peptide.copy())
+                        self.strength_peptide_tracker.append(self.strength_peptide.copy())
+                    self.peptide_remain.append(np.sum(self.particle.peptide))
 
             #if self.analytic != -1:
             #    lContour = self.ld*numDiff+self.lp*numRoll
             #    Kuhn = (np.power(self.x,2)+np.power(self.y,2))/lContour
 
             #    return time, x_tracker, y_tracker, [Kuhn, angle]
-            #print(time[-1]/num_diffuse)
+            print(time[-1]/num_diffuse)
 
             return time, x_tracker, y_tracker
 
