@@ -186,8 +186,8 @@ def PlotKuhn(Data):
 #plotTestFunction()
 #plt.show()
 
-#Data1  = DataSet( replicates=1000, s_length=1000,version=2, tp=500,lp=20, tb=4000,path="",simType="d", name="No Peptides Cluster")
-#Data1.LoadData()
+Data1  = DataSet( replicates=500, version=1, s_length=200, tp=500,lp=20, tb=4000,path="",simType="d", name="No Peptides Cluster")
+Data1.LoadData()
 #Data2  = DataSet( replicates=1000, s_length=1000, tp=500,lp=20, tb=4000,path="",simType="d", name="Diffusion Only")
 #Data2.LoadData()
 #Data3  = DataSet( replicates=1000, s_length=1000, version = 3,  tp=500,lp=20, tb=4000,path="",simType="d", name="No Directed Motion")
@@ -203,10 +203,10 @@ def PlotKuhn(Data):
 #Data1 = LoadGroupPath("AttDiff_tc_100", name = "CR 0.01")
 #Data3 = LoadGroupPath("AttDiff_tc_400", name = "CR 0.0025")
 
-Data4 = LoadGroupPath("AttDM_NoDM", name = "No DM")
-Data5 = LoadGroupPath("AttDM_NoPeptide", name = "No Peptide Attraction")
+#Data4 = LoadGroupPath("AttDM_NoDM", name = "No DM")
+#Data5 = LoadGroupPath("AttDM_NoPeptide", name = "No Peptide Attraction")
 
-Data6 = LoadGroupPath("AttDM_Diff", name = "Diff")
+#Data6 = LoadGroupPath("AttDM_Diff", name = "Diff")
 """
 Data2 = LoadGroupPath("Analytics_AttDiff_tc_200",name="CR 0.005")
 Data1 = LoadGroupPath("Analytics_AttDiff_tc_100", name = "CR 0.01")
@@ -219,7 +219,7 @@ Data3 = LoadGroupPath("Analytics_AttDiff_tc_400", name = "CR 0.0025")
 #Data3  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_400", name="0.0025", simType="d")
 
 
-PlotMultipleLogMSD([Data4, Data5, Data6])
+PlotMultipleLogMSD([Data1])
 #PlotDM([Data1,Data2,Data3])
 #PlotMultipleAngleFrequency([Data1,Data2,Data3])
 
