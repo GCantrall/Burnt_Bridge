@@ -186,7 +186,7 @@ def PlotKuhn(Data):
 #plotTestFunction()
 #plt.show()
 
-Data1  = DataSet( replicates=500, version=1, s_length=200, tp=500,lp=20, tb=4000,path="",simType="d", name="No Peptides Cluster")
+Data1  = DataSet( replicates=500, version=6, s_length=50, tp=500,lp=20, tb=4000,path="",simType="d", name="No Peptides Cluster")
 Data1.LoadData()
 #Data2  = DataSet( replicates=1000, s_length=1000, tp=500,lp=20, tb=4000,path="",simType="d", name="Diffusion Only")
 #Data2.LoadData()

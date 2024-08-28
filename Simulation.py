@@ -458,14 +458,6 @@ class AttractivePeptidesDirectedMotion(Simulation):
             current_time = 0
             start = time_i.time()
 
-            t_initial = start - time_i.time()
-            t_cleave = start - time_i.time()
-            t_insert = start-time_i.time()
-            t_roll = start-time_i.time()
-            t_diff = start-time_i.time()
-            t_pdiff = start- time_i.time()
-            t_final = start- time_i.time()
-
             deltaT_t = []
 
 
@@ -494,7 +486,8 @@ class AttractivePeptidesDirectedMotion(Simulation):
                         withPeptide.append(option)
                     else:
                         withoutPeptide.append(option)
-                deltaT =  -math.log(random.random())/(len(withPeptide)/self.tp+1/self.td+len(withoutPeptide)/self.tb)#+len(self.x_peptide)/self.pepDiff)
+                deltaT =  -math.log(random.random())/(len(withPeptide)/self.tp+1/self.td+len(withoutPeptide)/self.tb+len(self.x_peptide)/self.pepDiff)
+
                 current_time = current_time+deltaT
                 deltaT_t.append(deltaT)
 
@@ -518,12 +511,10 @@ class AttractivePeptidesDirectedMotion(Simulation):
                 totalChance = (len(withPeptide) / (self.tp) +
                                1 / self.td +
                                len(withoutPeptide) / (self.tb)+
-                               self.particle.peptide[current_location]/self.tc) #+
-                               #len(self.x_peptide)/self.pepDiff)
-                t_initial = t_initial+ (time_i.time()-start_i)
+                               self.particle.peptide[current_location]/self.tc+
+                               len(self.x_peptide)/self.pepDiff)
                 # Cleave Peptide
                 if(rand<(self.particle.peptide[current_location]/self.tc)/totalChance):
-                    start_i = time_i.time()
                     self.SetNeighbors()
                     self.x_peptide.append(self.x)
                     self.y_peptide.append(self.y)
@@ -534,11 +525,10 @@ class AttractivePeptidesDirectedMotion(Simulation):
                     self.particle.peptide[current_location] = 0
                     DM = -1
                     self.CheckPeptides()
-                    t_cleave = t_cleave + (time_i.time() - start_i)
 
                 # Insert Peptide
                 elif (rand < (len(withPeptide) / (self.tp) +self.particle.peptide[current_location]/self.tc) /totalChance):
-                    start_i = time_i.time()
+
                     choice  = random.random()*len(withPeptide)
                     chosen = -1
                     for i in range(len(withPeptide)):
@@ -551,11 +541,9 @@ class AttractivePeptidesDirectedMotion(Simulation):
                     DM =  random.random()*2*math.pi
                     #vector = [x2,y2]
                     current_location = withPeptide[chosen]
-                    t_insert = t_insert + (time_i.time() - start_i)
 
                 # Rotate To Other site
                 elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb) +self.particle.peptide[current_location]/self.tc)/(totalChance)):
-                    start_i = time_i.time()
                     choice  = random.random()*len(withoutPeptide)
                     chosen = -1
                     for i in range(len(withoutPeptide)):
@@ -565,11 +553,10 @@ class AttractivePeptidesDirectedMotion(Simulation):
                     degree, peptide = self.particle.MoveParticle(withoutPeptide[chosen])
                     DM = -1
                     current_location = withoutPeptide[chosen]
-                    t_roll = t_roll + (time_i.time() - start_i)
+
                 # Diffuse
-                #elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb) +self.particle.peptide[current_location]/self.tc + 1/self.td)/(totalChance)):
-                else:
-                    start_i = time_i.time()
+                elif(rand<(len(withPeptide)/(self.tp)+len(withoutPeptide)/(self.tb) +self.particle.peptide[current_location]/self.tc + 1/self.td)/(totalChance)):
+
                     degree = random.random()*2*math.pi
                     num_diffuse += 1
 
@@ -579,22 +566,13 @@ class AttractivePeptidesDirectedMotion(Simulation):
                         diff = math.pi*2 - diff
                     diff = diff/math.pi
 
-                    self.peptide_remain.append(np.sum(self.particle.peptide))
-                    x_tracker.append(self.x)
-                    y_tracker.append(self.y)
-                    time.append(current_time)
-                    if DM ==-1:
-                        self.DM_tracker.append(0)
-                    else:
-                        self.DM_tracker.append(1)
-
 
 
 
                     if DM ==-1:
                         diff = 0
 
-                    diff = 0
+                    #diff = 0
                     #if diff!= 0:
                     #    print("hi")
                     #if random.random()>np.exp(-self.kbd*diff):
@@ -606,27 +584,14 @@ class AttractivePeptidesDirectedMotion(Simulation):
 
                     energy_n = self.CalculateEnergy(x2,y2)
 
+                    energy_n = -10
 
 
+                    if (energy_n-self.energy<=0 or random.random()<np.exp(-self.kb*(energy_n-self.energy)) ) and random.random()<np.exp(-self.kbd*diff):
+                        self.energy= -energy_n
+                        self.x = x2
+                        self.y = y2
 
-                    #if (energy_n-self.energy<=0 or random.random()<np.exp(-self.kb*(energy_n-self.energy)) ) and random.random()<np.exp(-self.kbd*diff):
-
-                    self.energy= energy_n
-                    self.x = x2
-                    self.y = y2
-
-                    t_diff = t_diff + (time_i.time() - start_i)
-                    """
-                else:
-
-                    start_i = time_i.time()
-                    self.DiffusePeptide()
-                    #test = 1
-                    t_pdiff = t_pdiff + (time_i.time() - start_i)"""
-
-                """
-                start_i = time_i.time()
-                if current_time>time_count*.1:
                     time_count+=1
                     x_tracker.append(self.x)
                     y_tracker.append(self.y)
@@ -641,8 +606,15 @@ class AttractivePeptidesDirectedMotion(Simulation):
                         self.x_peptide_tracker.append(self.x_peptide.copy())
                         self.strength_peptide_tracker.append(self.strength_peptide.copy())
                     self.peptide_remain.append(np.sum(self.particle.peptide))
-                t_final = t_final + (time_i.time() - start_i)
-            """
+
+                else:
+                    self.DiffusePeptide()
+                    #test = 1
+
+
+
+
+
             """
             print(time[-1]/num_diffuse)
             print("Initial: "+str(t_initial))
