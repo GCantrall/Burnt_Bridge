@@ -186,8 +186,8 @@ def PlotKuhn(Data):
 #plotTestFunction()
 #plt.show()
 
-Data1  = DataSet( replicates=500, version=6, s_length=50, tp=500,lp=20, tb=4000,path="",simType="d", name="No Peptides Cluster")
-Data1.LoadData()
+#Data1  = DataSet( replicates=500, version=6, s_length=50, tp=500,lp=20, tb=4000,path="",simType="d", name="No Peptides Cluster")
+#Data1.LoadData()
 #Data2  = DataSet( replicates=1000, s_length=1000, tp=500,lp=20, tb=4000,path="",simType="d", name="Diffusion Only")
 #Data2.LoadData()
 #Data3  = DataSet( replicates=1000, s_length=1000, version = 3,  tp=500,lp=20, tb=4000,path="",simType="d", name="No Directed Motion")
@@ -199,9 +199,10 @@ Data1.LoadData()
 #Data4.Average(Data5)
 
 
-#Data2 = LoadGroupPath("AttDiff_z",name="CR 0.005")
-#Data1 = LoadGroupPath("AttDiff_tc_100", name = "CR 0.01")
-#Data3 = LoadGroupPath("AttDiff_tc_400", name = "CR 0.0025")
+Data1 = LoadGroupPath("Analytics_AttDM_tc_test3",name="tc 50")
+Data2 = LoadGroupPath("Analytics_AttDM_tc_100", name = "tc 100")
+Data3 = LoadGroupPath("Analytics_AttDM_tc_200", name = "tc 200")
+Data4 = LoadGroupPath("Analytics_AttDM_tc_400", name = "tc 400")
 
 #Data4 = LoadGroupPath("AttDM_NoDM", name = "No DM")
 #Data5 = LoadGroupPath("AttDM_NoPeptide", name = "No Peptide Attraction")
@@ -219,9 +220,9 @@ Data3 = LoadGroupPath("Analytics_AttDiff_tc_400", name = "CR 0.0025")
 #Data3  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_400", name="0.0025", simType="d")
 
 
-PlotMultipleLogMSD([Data1])
+PlotMultipleLogMSD([Data1, Data2, Data3, Data4])
 #PlotDM([Data1,Data2,Data3])
-#PlotMultipleAngleFrequency([Data1,Data2,Data3])
+PlotMultipleAngleFrequency([Data1,Data2,Data3, Data4])
 
 #Distince1  = LoadGroup(replicates=10000, idMin=1,idMax=20,versionMin=1, s_length=10000, versionMax=3,tp=500,lp=20, tb=4000,path="Analytics_Directional_Updated_Angle", name="Normal")
 #Distince2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Distince", name="Half Insertion Rate")

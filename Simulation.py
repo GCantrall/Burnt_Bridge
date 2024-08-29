@@ -429,9 +429,11 @@ class AttractivePeptidesDirectedMotion(Simulation):
                     del self.y_peptide[j]
                     del self.strength_peptide[j]
                     del self.time_peptide[j]
+
+                    self.SetNeighbors()
                     break
         else:
-            self.time_peptide[i] +=10
+            self.time_peptide[i] +=1
 
 
     def RunSimulation(self, totalTime):
@@ -583,12 +585,12 @@ class AttractivePeptidesDirectedMotion(Simulation):
                     y2 = self.y+(self.ld)*math.sin(degree)
 
                     energy_n = self.CalculateEnergy(x2,y2)
-
-                    energy_n = -10
+                    self.energy = self.CalculateEnergy(self.x,self.y)
+                    #energy_n = -10
 
 
                     if (energy_n-self.energy<=0 or random.random()<np.exp(-self.kb*(energy_n-self.energy)) ) and random.random()<np.exp(-self.kbd*diff):
-                        self.energy= -energy_n
+                        self.energy= energy_n
                         self.x = x2
                         self.y = y2
 
@@ -635,7 +637,7 @@ class AttractivePeptidesDirectedMotion(Simulation):
     # Calculate The energy of peptides
     def CalculateEnergy(self,x2,y2):
         energy = 0
-        self.SetNeighbors()
+        #self.SetNeighbors()
         for k in self.neighbors:
             dist = np.sqrt(math.pow(self.x_peptide[k] - x2, 2) + math.pow(self.y_peptide[k] - y2, 2))
             energydiff = 0
