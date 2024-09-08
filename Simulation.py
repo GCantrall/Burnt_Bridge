@@ -450,6 +450,7 @@ class AttractivePeptidesDirectedMotion(Simulation):
             self.y_peptide = []
             self.strength_peptide = []
             self.time_peptide = []
+            self.energy = 0
             self.neighbors = []
             self.kbd = 2
             self.DM_tracker = []

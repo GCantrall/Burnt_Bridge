@@ -63,6 +63,41 @@ def PlotLogMSD(Data):
     ax2.plot((Data.timescale),Data.peptides,c = 'r')
     ax2.set_ylim(0,np.max(Data.peptides))
 
+
+def PlotSingleMSD(path):
+    files = os.listdir(path)
+    fig, ax1 = plt.subplots()
+    Data1 = DataSet()
+    t = 0
+    maxTime = 0
+
+    ax1.set_yscale('log',base=10)
+    ax1.set_xscale('log',base=10)
+    ax1.set_xlabel("Time")
+    ax1.set_ylabel("Mean Squared Distance")
+
+    for file in files:
+        if "Simulation_" in file:
+            if t==0:
+                Data1.LoadData(path+"/"+ file)
+                t = 1
+            else:
+                Data2 = DataSet()
+                Data2.LoadData(path+"/"+ file)
+                Data1.Average(Data2)
+                t = t+1
+                if t >20:
+                    continue
+
+                ax1.plot((Data2.timescale[10:]), (Data2.MSD[10:]), c='gray', alpha = .5)
+                if(maxTime<np.max(Data2.timescale)):
+                    maxTime=np.max(Data2.timescale)
+    ax1.plot((Data1.timescale[10:]), (Data1.MSD[10:]))
+    ax1.plot([1,maxTime], [1,maxTime],c='k',linestyle='--', label = "Normal Diffusion")
+
+
+
+
 """ Plots multiple LogMSD graphs on the same plot"""
 def PlotMultipleLogMSD(DataList):
     fig, ax1 = plt.subplots()
@@ -199,10 +234,13 @@ def PlotKuhn(Data):
 #Data4.Average(Data5)
 
 
-Data1 = LoadGroupPath("Analytics_AttDM_tc_test3",name="tc 50")
-Data2 = LoadGroupPath("Analytics_AttDM_tc_100", name = "tc 100")
-Data3 = LoadGroupPath("Analytics_AttDM_tc_200", name = "tc 200")
-Data4 = LoadGroupPath("Analytics_AttDM_tc_400", name = "tc 400")
+#Data1 = LoadGroupPath("Analytics_AttDM_Final_2_tc_100",name="tc 100")
+#Data2 = LoadGroupPath("Analytics_AttDM_Final_2_tc_200", name = "tc 200")
+#Data3 = LoadGroupPath("Analytics_AttDM_Final_2_tc_400", name = "tc 400")
+#Data1_msd = LoadGroupPath("AttDM_Final_tc_100",name="tc 100")
+#Data2_msd = LoadGroupPath("AttDM_Final_tc_200", name = "tc 200")
+#Data3_msd = LoadGroupPath("AttDM_Final_tc_400", name = "tc 400")
+#Data4 = LoadGroupPath("Analytics_AttDM_tc_400", name = "tc 400")
 
 #Data4 = LoadGroupPath("AttDM_NoDM", name = "No DM")
 #Data5 = LoadGroupPath("AttDM_NoPeptide", name = "No Peptide Attraction")
@@ -220,10 +258,13 @@ Data3 = LoadGroupPath("Analytics_AttDiff_tc_400", name = "CR 0.0025")
 #Data3  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_400", name="0.0025", simType="d")
 
 
-PlotMultipleLogMSD([Data1, Data2, Data3, Data4])
+#PlotMultipleLogMSD([Data1_msd,Data2_msd,Data3_msd])
 #PlotDM([Data1,Data2,Data3])
-PlotMultipleAngleFrequency([Data1,Data2,Data3, Data4])
+#PlotMultipleAngleFrequency([Data1,Data2, Data3])
 
+PlotSingleMSD("Single_AttDM_Final")
+PlotSingleMSD("Single_AttDM_Final_tc_100")
+PlotSingleMSD("Single_AttDM_Final_tc_100_kp_3")
 #Distince1  = LoadGroup(replicates=10000, idMin=1,idMax=20,versionMin=1, s_length=10000, versionMax=3,tp=500,lp=20, tb=4000,path="Analytics_Directional_Updated_Angle", name="Normal")
 #Distince2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Distince", name="Half Insertion Rate")
 #Distince3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Distince", name="Douple Move Distance")
