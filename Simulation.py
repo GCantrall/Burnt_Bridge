@@ -26,6 +26,7 @@ class Simulation:
         self.pType = _pType
         self.analytic = _analytic
         self.energy = 0
+        self.save = 0
         self.kb= _kb
         self.tc =_tc
         self.plot = _plot
@@ -108,6 +109,79 @@ class Simulation:
                 plt.savefig(folder + "/%03d.png" % k)
                 k +=1
                 plt.close(fig)
+
+    def PlotFigTraj(self,time,x_tracker,y_tracker,x_peptide_unif,y_peptide_unif,strength_peptide_unif):
+        x_ini = []
+        y_ini = []
+        x_end = []
+        y_end = []
+        numFigs = 5
+        length = 30000
+        folder = "testImages"
+        fig, ax = plt.subplots(1,numFigs)
+        distence = 260
+
+        k = 1
+        n = 0
+        x_min = min(x_tracker[:length])
+        x_max = max(x_tracker[:length])
+        x_dist = x_max-x_min
+        y_min = min(y_tracker[:length])
+        y_max = max(y_tracker[:length])
+        y_dist = y_max-y_min
+        print(x_dist)
+        print(y_dist)
+        if 260>x_dist:
+            x_min -= (260-x_dist)/2
+            x_max += (260-x_dist)/2
+        if 260>y_dist:
+            y_min -= (260-y_dist)/2
+            y_max += (260-y_dist)/2
+
+
+        if x_dist>y_dist:
+            y_min -= (x_dist-y_dist)/2
+            y_max += (x_dist-y_dist)/2
+        else:
+            x_min -= (y_dist-x_dist)/2
+            x_max += (y_dist-x_dist)/2
+
+        for i in range(int(np.where(time == length)[0]+1)):
+            #j = i - 30000
+            if time[i] >k*(length/numFigs)-1:
+                #x_end.append(x_tracker[j] - x_tracker[-30000])
+                #y_end.append(y_tracker[j] - y_tracker[-30000])
+                y_ini.append(y_tracker[i])
+                x_ini.append([x_tracker[i]])
+                ax[k-1].get_xaxis().set_visible(False)
+                ax[k-1].get_yaxis().set_visible(False)
+                ax[k-1].spines[:].set_linewidth(2)
+                ax[k-1].set_xlim( x_min, x_max)
+                ax[k-1].set_ylim(y_min, y_max)
+                ax[k-1].set_aspect('equal')
+
+                # cax  = ax1.scatter(np.array(x_peptide_unif[j])-x_tracker[-30000], np.array(y_peptide_unif[j])-y_tracker[-30000], c=strength_peptide_unif[j], zorder=1, vmin=1, vmax=10,edgecolors="darkblue",cmap ="viridis", s = 2*np.array(strength_peptide_unif[j])+5)
+                # cax_2  = ax1.scatter(x_peptide_unif[i], y_peptide_unif[i], c=strength_peptide_unif[i], zorder=1, vmin=1, vmax=10,edgecolors="red",cmap="viridis", s = 2*np.array(strength_peptide_unif[i])+5)
+
+                #cax = ax1.scatter(np.array(x_peptide_unif[j]) - x_tracker[-30000],
+                #                  np.array(y_peptide_unif[j]) - y_tracker[-30000], zorder=1, c="darkblue",
+                #                  s=3 * np.array(strength_peptide_unif[j]))
+                cax_2 = ax[k-1].scatter(x_peptide_unif[i], y_peptide_unif[i], zorder=1, c="red",
+                                    s=3 * np.array(strength_peptide_unif[i]))
+
+                ax[k-1].plot(x_tracker[:n:25], y_tracker[:n:25], c='moccasin', zorder=0)
+                ax[k - 1].plot(x_tracker[n:i:25], y_tracker[n:i:25], c='orange', zorder=0)
+                #ax1.plot(x_end, y_end, c='blue', zorder=0)
+                ax[k-1].scatter(x_tracker[i], y_tracker[i], s=30, c="brown", zorder=3)
+                n = i
+                #ax1.scatter(x_end[-1], y_end[-1], s=30, c="blue", edgecolors="black", zorder=3)
+
+                # cbar = fig.colorbar(cax, ticks= range(1, 10))
+                # cbar.ax.set_yticklabels(range(1, 10))
+                #plt.savefig(folder + "/%03d.png" % k)
+
+                k += 1
+                #plt.close(fig)
 
     # Creates imgages of the trajectorie
     def PlotPathVideoBeginEnd(self,time,x_tracker,y_tracker,x_peptide_unif,y_peptide_unif,strength_peptide_unif):
@@ -604,7 +678,7 @@ class AttractivePeptidesDirectedMotion(Simulation):
                     else:
                         self.DM_tracker.append(1)
                     #DM_tracker.append(DM)
-                    if self.plot==6:
+                    if self.plot in [6,8] or self.save in [1,2]:
                         self.y_peptide_tracker.append(self.y_peptide.copy())
                         self.x_peptide_tracker.append(self.x_peptide.copy())
                         self.strength_peptide_tracker.append(self.strength_peptide.copy())

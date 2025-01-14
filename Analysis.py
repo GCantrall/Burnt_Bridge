@@ -3,7 +3,7 @@ import random
 import math
 import sys
 from Simulation import Simulation
-from DataFile import DataSet
+from DataFile import DataSet, Trajectory
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import os.path
@@ -218,8 +218,164 @@ def plotTestFunction():
 def PlotKuhn(Data):
     plt.boxplot(Data.Kuhn,0,'')
     print(np.min(Data.Kuhn))
-#plotTestFunction()
-#plt.show()
+
+def GetMSDTraj(Folder, start=0, end =1000000):
+    MSE = np.zeros(end-start)
+    numT = 0
+    #print(os.walk(Folder))
+    #root, _, files in os.walk(Folder)
+    for file in os.listdir(Folder):
+        if "trajectory" in file:
+            try:
+                info = np.load(Folder+"/"+file)
+                x_total = info["x_total"]
+                y_total = info["y_total"]
+                x_total = x_total[start:end]
+                y_total = y_total[start:end]
+
+                x_total = x_total - x_total[0]
+                y_total = y_total - y_total[0]
+                MSE = MSE + np.square(x_total) + np.square(y_total)
+                numT +=1
+            except():
+                next()
+
+    return MSE/numT
+
+def PlotMSDTraj(folders,starts,ends,names):
+    plt.rc('font', size=17)
+    plt.rc('legend',fontsize=15)
+    fig,ax = plt.subplots()
+
+    ax.set_yscale('log',base=10)
+    ax.set_xscale('log',base=10)
+    ax.plot([500, ends[0]], [500, ends[0]], c='k', linestyle='--')
+    ax.spines[:].set_linewidth(2)
+    ax.set_xlim(50,3000)
+    ax.set_ylim(30,20000)
+    colors = ['green', 'darkviolet', 'mediumturquoise',  'royalblue']
+    for i in range(len(folders)):
+        MSDTr = GetMSDTraj(folders[i],starts[i],ends[i])
+        ax.plot(range(ends[i]-starts[i]), MSDTr, label = names[i], c=colors[i])
+        print(folders[i])
+        #x = np.log10(np.arange(ends[i]-starts[i]))
+        #y = np.log10(MSDTr)
+        #plt.plot(np.log10(np.arange(ends[i]-starts[i])), np.log10(MSDTr))
+        #plt.show()
+
+        m,b = np.polyfit(np.log10(np.arange(ends[i]-starts[i]))[1:],np.log10(MSDTr)[1:],1)
+        print("slope: "+str(m))
+        print("intersept: "+str(b))
+        data = np.arange(ends[i]-starts[i])
+        data = data*m
+        data = data+b
+        print(data)
+        ax.plot( np.arange(ends[i]-starts[i]), np.power(10,np.log10(np.arange(ends[i]-starts[i]))*float(m)+b), linestyle = '--', c = colors[i])
+
+    leg = ax.legend(frameon=False, handlelength=0, handletextpad=0)
+
+    for color, text in zip(colors, leg.get_texts()):
+        text.set_color(color)
+
+def CalculateAngles(Folder, start=0, end = 30000):
+
+    numT = 0
+    angleDistTotal = np.zeros(round(2 * np.pi * 10))
+    #print(os.walk(Folder))
+    #root, _, files in os.walk(Folder)
+    for file in os.listdir(Folder):
+        a = [1, 0]
+        prev_coords = [0, 0]
+        prev_dist = 1
+        angles = []
+        if "trajectory" in file:
+
+            info = np.load(Folder + "/" + file)
+            x_total = info["x_total"]
+            y_total = info["y_total"]
+
+            for j in range(start, end,100):
+
+                b = [x_total[j] - prev_coords[0], y_total[j] - prev_coords[1]]
+                ncross = np.cross(a, b)
+                dist = np.sqrt(np.power(b[0], 2) + np.power(b[1], 2))
+                if (b[0] == 0 and b[1] == 0):
+                    continue
+                diff = np.dot(a, b) / (prev_dist * dist)
+
+                if (ncross == 0 and j!=100):
+                    angles.append(0)
+                elif (j != 100):
+                    angles.append(np.arccos(diff) * ncross / np.sqrt(ncross.dot(ncross)))
+                a = b
+                prev_dist = dist
+                prev_coords = [x_total[j], y_total[j]]
+
+            angleDist = np.zeros(round(2 * np.pi * 10) + 1)
+            for angle in angles:
+                angleDist[int(round((angle + np.pi) * 10))] += 1
+            angleDist[0] += angleDist[-1]
+            angleDist = angleDist[:-1]
+            angleDistTotal = (numT * angleDistTotal + angleDist) / (numT + 1)
+            numT+=1
+    return angleDistTotal
+
+
+
+def PlotAnglesTraj(folders,starts,ends,names):
+    plt.rc('font', size=17)
+    fig,ax = plt.subplots()
+    ax.spines[:].set_linewidth(2)
+    y_labels = np.array([-150, -100, -50, 0, 50, 100, 150])
+    ticks = (y_labels / 180) * np.pi
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(y_labels)
+    colors = ['mediumturquoise',  'royalblue']
+    ax.set_ylim(0.013,0.025)
+    for i in range(len(folders)):
+        #ax.plot(range(ends[i]-starts[i]),GetMSDTraj(folders[i],starts[i],ends[i]), label = names[i], c=colors[i])
+        angles = CalculateAngles(folders[i],starts[i],ends[i])
+        ax.plot(np.arange(len(angles) - 1) / (10) - np.pi, angles[1:] / sum(angles[1:]), label = names[i],c=colors[i])
+        print(folders[i])
+    leg = ax.legend(frameon=False, handlelength=0, handletextpad=0)
+
+    for color, text in zip(colors, leg.get_texts()):
+        text.set_color(color)
+
+
+print(os.getcwd())
+#os.chdir("E:/Reovirus_Data")
+
+traj = Trajectory("Simulation_d_snapshot_4r_1000000s_200tc_trajectory2.trj")
+traj.LoadData()
+traj.PlotTrj()
+"""
+traj = Trajectory("Simulation_d_snapshot_4r_1000000s_200tc_trajectory2.trj")
+traj.LoadData()
+traj.PlotTrj(start = -5, distance=420)
+
+traj = Trajectory("Simulation_d_snapshot_4r_1000000s_100tc_trajectory2.trj")
+traj.LoadData()
+traj.PlotTrj(distance=420)
+
+traj = Trajectory("Simulation_d_snapshot_4r_1000000s_100tc_trajectory2.trj")
+traj.LoadData()
+traj.PlotTrj(start = -5, distance=420)
+
+"""
+
+folders = [ "trajectories_tc_200", "trajectories_tc_100","trajectories_tc_200", "trajectories_tc_100"]
+starts = [100, 100,-103000,  -103000]
+ends = [3100, 3100, -100000,  -100000]
+
+PlotMSDTraj(folders,starts,ends,["Slow Cleavage Initial", "Fast Cleavage Initial", "Slow Cleavage Long Time",  "Fast Cleavage Long Time"])
+
+
+#folders = [ "trajectories_tc_200",  "trajectories_tc_100"]
+#starts = [-200000,  -200000]
+#ends = [-100, -100]
+#PlotAnglesTraj(folders,starts,ends,["Slow Cleavage",  "Fast Cleavage"])
+#PlotMSDTraj(folders,starts,ends,["T1L Initial", "T1L/T3DM2 Initial", "T1L Final",  "T1L/T3DM2 Final"])
 
 #Data1  = DataSet( replicates=500, version=6, s_length=50, tp=500,lp=20, tb=4000,path="",simType="d", name="No Peptides Cluster")
 #Data1.LoadData()
@@ -234,8 +390,8 @@ def PlotKuhn(Data):
 #Data4.Average(Data5)
 
 
-#Data1 = LoadGroupPath("Analytics_AttDM_Final_2_tc_100",name="tc 100")
-#Data2 = LoadGroupPath("Analytics_AttDM_Final_2_tc_200", name = "tc 200")
+#Data1 = LoadGroupPath("Analytics_AttDM_tc_100",name="tc 100")
+#Data2 = LoadGroupPath("Analytics_AttDM_tc_200", name = "tc 200")
 #Data3 = LoadGroupPath("Analytics_AttDM_Final_2_tc_400", name = "tc 400")
 #Data1_msd = LoadGroupPath("AttDM_Final_tc_100",name="tc 100")
 #Data2_msd = LoadGroupPath("AttDM_Final_tc_200", name = "tc 200")
@@ -247,33 +403,34 @@ def PlotKuhn(Data):
 
 #Data6 = LoadGroupPath("AttDM_Diff", name = "Diff")
 """
-Data2 = LoadGroupPath("Analytics_AttDiff_tc_200",name="CR 0.005")
-Data1 = LoadGroupPath("Analytics_AttDiff_tc_100", name = "CR 0.01")
-Data3 = LoadGroupPath("Analytics_AttDiff_tc_400", name = "CR 0.0025")
+#Data2 = LoadGroupPath("Analytics_AttDiff_tc_200",name="CR 0.005")
+#Data1 = LoadGroupPath("Analytics_AttDiff_tc_100", name = "CR 0.01")
+#Data3 = LoadGroupPath("Analytics_AttDiff_tc_400", name = "CR 0.0025")
 """
 
 
 #Data1  = LoadGroup(idMin=1,idMax=50,versionMin=1, replicates=50, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDiff_z", name= "Run1",simType="d")
 #Normal  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_200", name="Normal", simType="d")
-#Data3  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_400", name="0.0025", simType="d")
-
+#Data1  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_400", name="0.0025", simType="d")
+#Data2  = LoadGroup(idMin=1,idMax=60,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="AttDif_tc_400", name="0.0025", simType="d")
 
 #PlotMultipleLogMSD([Data1_msd,Data2_msd,Data3_msd])
 #PlotDM([Data1,Data2,Data3])
-#PlotMultipleAngleFrequency([Data1,Data2, Data3])
+#PlotMultipleAngleFrequency([Data1,Data2])
 
-PlotSingleMSD("Single_AttDM_Final")
-PlotSingleMSD("Single_AttDM_Final_tc_100")
-PlotSingleMSD("Single_AttDM_Final_tc_100_kp_3")
+#PlotSingleMSD("Single_AttDM_Final")
+#PlotSingleMSD("Single_AttDM_Final_tc_100")
+#PlotSingleMSD("Single_AttDM_Final_tc_100_kp_3")
 #Distince1  = LoadGroup(replicates=10000, idMin=1,idMax=20,versionMin=1, s_length=10000, versionMax=3,tp=500,lp=20, tb=4000,path="Analytics_Directional_Updated_Angle", name="Normal")
 #Distince2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Distince", name="Half Insertion Rate")
 #Distince3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Distince", name="Douple Move Distance")
 
 
 """
-Normal1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Normal", name="Normal")
-Normal2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Normal", name="Half Insertion Rate")
-Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Normal", name="Douple Move Distance")
+#Normal1  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=20, tb=4000,path="Normal", name="Normal")
+
+#Normal2  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=1000,lp=20, tb=4000,path="Normal", name="Half Insertion Rate")
+#Normal3  = LoadGroup(idMin=1,idMax=20,versionMin=1, s_length=1000000, versionMax=1,tp=500,lp=40, tb=4000,path="Normal", name="Douple Move Distance")
 """
 #Data = LoadGroup(idMin=1,idMax=20,versionMin=1,replicates=20000, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Repulsion_2", name="Repulsive")
 #Data1 = LoadGroup(idMin=1,idMax=20,replicates= 10000, versionMin=1, s_length=10000, versionMax=1,tp=500,lp=20, tb=4000,path="Analytics_Unblocked_Updated", name="Unblocked")

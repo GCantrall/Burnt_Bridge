@@ -73,4 +73,99 @@ class DataSet:
         #                self.replicates + DataSet2.replicates)
         if(len(self.angles)>1 and len(DataSet2.angles)>1):
             self.angles = (self.angles * self.replicates + DataSet2.angles * DataSet2.replicates) / (self.replicates + DataSet2.replicates)
+class Trajectory:
+    def __init__(self,_filename):
+        self.x = []
+        self.time = []
+        self.y = []
+        self.x_pep = []
+        self.y_pep = []
+        self.s_pep = []
+        self.filename = _filename
 
+    def LoadData(self):
+        with open(self.filename, "r") as file:
+            line = file.readline()
+            while line:
+                self.time.append(int(line[:-3]))
+
+                line = file.readline()
+                line = line[1:-2].split(',')
+                self.x.append([float(z) for z in line])
+
+                line = file.readline()
+                line = line[1:-2].split(',')
+                self.y.append([float(z) for z in line])
+
+                line = file.readline()
+                if line == "[]\n":
+                    self.x_pep.append([])
+                else:
+                    line = line[1:-2].split(',')
+                    self.x_pep.append([float(z) for z in line])
+
+                line = file.readline()
+                if line == "[]\n":
+                    self.y_pep.append([])
+                else:
+                    line = line[1:-2].split(',')
+                    self.y_pep.append([float(z) for z in line])
+
+                line = file.readline()
+                if line == "[]\n":
+                    self.s_pep.append([])
+                else:
+                    line = line[1:-2].split(',')
+                    self.s_pep.append([int(z) for z in line])
+
+                line = file.readline()
+
+    def PlotTrj(self,distance=-1,start= 0):
+        numFigs = 5
+
+        fig, ax = plt.subplots(1,numFigs)
+        plt.subplots_adjust(wspace = 0.05)
+        if start<0:
+            start = len(self.x)+start-4
+        x_min = np.min(np.array(self.x)[start:start+5])-5
+        x_max = np.max(np.array(self.x)[start:start+5])+5
+        x_dist = x_max-x_min
+        y_min = np.min(np.array(self.y)[start:start+5])-5
+        y_max = np.max(np.array(self.y)[start:start+5])+5
+        y_dist = y_max-y_min
+        print(x_dist)
+        print(y_dist)
+        if distance==-1:
+            if y_dist>x_dist:
+                x_min -= (y_dist-x_dist)/2
+                x_max += (y_dist-x_dist)/2
+            if x_dist>y_dist:
+                y_min -= (x_dist-y_dist)/2
+                y_max += (x_dist-y_dist)/2
+        else:
+            if distance>x_dist:
+                x_min -= (distance-x_dist)/2
+                x_max += (distance-x_dist)/2
+            if distance>y_dist:
+                y_min -= (distance-y_dist)/2
+                y_max += (distance-y_dist)/2
+
+
+        for i in range(start, start+5):
+
+
+            ax[i-start].get_xaxis().set_visible(False)
+            ax[i-start].get_yaxis().set_visible(False)
+            ax[i-start].spines[:].set_linewidth(1)
+            ax[i-start].set_xlim( x_min, x_max)
+            ax[i-start].set_ylim(y_min, y_max)
+            ax[i-start].set_aspect('equal')
+
+
+            cax_2 = ax[i-start].scatter(self.x_pep[i], self.y_pep[i], zorder=1, c="red",
+                                s=3 * np.array(self.s_pep[i]))
+            for z in range(start,i):
+                ax[i-start].plot(self.x[z], self.y[z], c='lightsteelblue', zorder=0)
+            ax[i-start].plot(self.x[i], self.y[i], c= 'royalblue', zorder=0)
+            #ax1.plot(x_end, y_end, c='blue', zorder=0)
+            ax[i-start].scatter(self.x[i][-1], self.y[i][-1], s=30, c="black", zorder=3)

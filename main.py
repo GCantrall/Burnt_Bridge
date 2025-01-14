@@ -34,7 +34,7 @@ def GetParams():
     plot = -1
     tc = 200
     analytic = -1
-
+    save = 0
     ptype = "n"
     simulation = "b"
     for i in range(int((len(arguments)-1)/2)):
@@ -62,13 +62,15 @@ def GetParams():
             tc = int(arguments[2*i+2])
         elif arguments[(2*i+1)]== "-sim":
             simulation = arguments[2*i+2]
+        elif arguments[(2*i+1)]=="-save":
+            save = int(arguments[2*i+2])
 
 
-    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype, analytic, tc, simulation]
+    return [s_length, replicates, tp, lp, tb, id,w,plot, ptype, analytic, tc, simulation,save]
 
 
 if __name__ == '__main__':
-    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic, tc,simulation = GetParams()
+    s_length, replicates, tp, lp, tb, id, RMSDw_l,plot, ptype, analytic, tc,simulation,save = GetParams()
 
 
     if simulation=="b":
@@ -92,6 +94,16 @@ if __name__ == '__main__':
     MSD = np.zeros(len(timescale))
     DM = np.zeros(len(timescale))
     KuhnTotal = []
+    S.save = save
+    if save == 1:
+        x_total = []
+        y_total = []
+        pep_x_total = []
+        pep_y_total = []
+        pep_strength_total = []
+        S.save = save
+
+
 
     angleDistTotal = np.zeros(round(2*np.pi*10))
     for i in range(replicates):
@@ -130,6 +142,8 @@ if __name__ == '__main__':
             while True:
                 if time[k + 1] < timescale[j]:
                     k = k + 1
+                    if time[k]>s_length:
+                        break
                 else:
                     break
 
@@ -138,11 +152,10 @@ if __name__ == '__main__':
             y_unif.append(y_tracker[k])
             DM_unif.append(S.DM_tracker[k])
 
-        x_peptide_unif = []
-        y_peptide_unif = []
-        strength_peptide_unif = []
-
-        if plot==6:
+        if (plot==6 or plot == 8 or save ==2):
+            x_peptide_unif = []
+            y_peptide_unif = []
+            strength_peptide_unif = []
             k=0
             for j in range(len(timescale)):
                 while True:
@@ -150,8 +163,7 @@ if __name__ == '__main__':
                         k = k + 1
                     else:
                         break
-
-                x_peptide_unif.append(S.x_peptide_tracker[k][:])
+                x_peptide_unif.append(S.x_peptide_tracker[k].copy())
                 y_peptide_unif.append(S.y_peptide_tracker[k].copy())
                 strength_peptide_unif.append(S.strength_peptide_tracker[k].copy())
 
@@ -164,7 +176,8 @@ if __name__ == '__main__':
                 S.PlotPathRange(timescale,x_unif,y_unif)
             if(plot==6):
                 S.PlotPathVideoBeginEnd(timescale,x_unif,y_unif,x_peptide_unif,y_peptide_unif,strength_peptide_unif)
-
+            if(plot==8):
+                S.PlotFigTraj(timescale,x_unif,y_unif,x_peptide_unif,y_peptide_unif,strength_peptide_unif)
             plt.show()
 
 
@@ -212,11 +225,44 @@ if __name__ == '__main__':
         peptide_remaining = (i*peptide_remaining+np.array(peptide_unif))/(i+1)
 
         DM = (i * DM + np.array(DM_unif)) / (i + 1)
+        if save == 1:
+            pep_strength_total = np.array(pep_strength_total)
+            #pep_x_total.append(x_peptide_unif)
+            #pep_y_total.append(y_peptide_unif)
+            #pep_strength_total.append(strength_pepti
+            x_total = np.array(x_total)
+            y_total = np.array(y_total)
+            filename = "Simulation_" + simulation + "_" + str(replicates) + "r_" + str(s_length) + "s_" + str(
+                tc) + "tc_" +"trajectory"+str(i)
+            if id != -1:
+                filename = filename + "_" + str(id)
 
-    filename  = "Simulation_"+simulation+"_"+str(replicates)+"r_"+str(s_length)+"s_"+str(lp)+"lp_"+str(tp)+"tp_"+str(tb)+"tb"
+            filename_path = filename + ".npz"
+            np.savez(filename_path, x_total=x_unif, y_total=y_unif)
+        elif(save ==2):
+            filename = "Simulation_" + simulation + "_snapshot_" + str(replicates) + "r_" + str(s_length) + "s_" + str(
+                tc) + "tc_" +"trajectory"+str(i)+".trj"
+            with open(filename, "w+") as file:
+                prev = 0
+                for index in range(6000,s_length,6000):
+                    file.write(str(timescale[index])+"\n")
+                    file.write(str(x_unif[prev:index:25])+"\n")
+                    file.write(str(y_unif[prev:index:25])+"\n")
+                    file.write(str(x_peptide_unif[index])+"\n")
+                    file.write(str(y_peptide_unif[index])+"\n")
+                    file.write(str(strength_peptide_unif[index])+"\n")
+                    prev = index
+
+
+
+
+    #pep_x_total = np.array(pep_x_total)
+    #pep_y_total = np.array(pep_y_total)
+    #pep_strength_total = np.array(pep_strength_total)
+
+    filename  = "Simulation_"+simulation+"_"+str(replicates)+"r_"+str(s_length)+"s_"+str(tc)+"tc_"+str(tp)+"tp_"+str(tb)+"tb"
     if id != -1:
         filename = filename+"_"+str(id)
-
 
     if os.path.isfile(filename+".npz"):
         k=2
@@ -226,6 +272,11 @@ if __name__ == '__main__':
             else:
                 filename = filename+"("+str(k)+")"
                 break
+    """if save == 1:
+        x_total = np.array(x_total)
+        y_total = np.array(y_total)
+        filename_path = filename+"_trajectory.npz"
+        np.savez(filename_path, x_total = x_total, y_total = y_total)"""
 
 
 
